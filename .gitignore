@@ -1,0 +1,20 @@
+# Python
+.mypy_cache
+.pytest_cache
+**/__pycache__
+.vscode/.ropeproject
+
+# Misc files
+*.out
+*.gz
+*.aux
+*.pdf
+*.log
+*.swp
+*.dat
+*.png
+*.prof
+
+# Test artifacts
+.coverage
+coverage.xml

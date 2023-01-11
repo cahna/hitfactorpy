@@ -1,0 +1,10 @@
+{
+    "python.linting.pylintEnabled": false,
+    "python.linting.mypyEnabled": true,
+    "python.linting.enabled": true,
+    "python.formatting.provider": "black",
+    "[python]": {
+      "editor.insertSpaces": true,
+      "editor.tabSize": 4
+    }
+  }
