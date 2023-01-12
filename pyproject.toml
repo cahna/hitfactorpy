@@ -29,6 +29,7 @@ tox = "^4.2.4"
 mypy = "^0.991"
 autoflake = "^2.0.0"
 pytest-cov = "^4.0.0"
+deptry = "^0.7.1"
 
 [tool.poetry.group.docs]
 optional = true

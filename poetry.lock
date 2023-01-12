@@ -243,6 +243,24 @@ tomli = {version = "*", optional = true, markers = "python_full_version <= \"3.1
 toml = ["tomli"]
 
 [[package]]
+name = "deptry"
+version = "0.7.1"
+description = "A command line utility to check for obsolete, missing and transitive dependencies in a Python project."
+category = "dev"
+optional = false
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "deptry-0.7.1-py3-none-any.whl", hash = "sha256:770f1371e2dfb292c604db9380ac9653403baa0d81da625a82ca56f028c0f1e1"},
+    {file = "deptry-0.7.1.tar.gz", hash = "sha256:1cd27a8c30ed22dd3687653c1c6e5f86171fbe956798048d6da15a77768ebe5d"},
+]
+
+[package.dependencies]
+chardet = ">=4.0.0"
+click = ">=8.0.0,<9.0.0"
+pathspec = ">=0.9.0"
+tomli = {version = ">=2.0.1,<3.0.0", markers = "python_version < \"3.11\""}
+
+[[package]]
 name = "distlib"
 version = "0.3.6"
 description = "Distribution utilities"
@@ -1264,4 +1282,4 @@ watchmedo = ["PyYAML (>=3.10)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "eb2fffd845fad0e5fc660a60b86be645601bf75d8da32136137abb1f5f606f1d"
+content-hash = "ade500f6dbb2d4628bcb6698d3aba693d863d011e08cbe7c8780d08a250c7e38"
