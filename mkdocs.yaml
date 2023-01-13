@@ -1,0 +1,35 @@
+site_name: practipy
+site_description: practipy
+site_url: https://localhost/
+
+theme:
+  name: 'material'
+  palette:
+    primary: 'green'
+    accent: 'orange'
+  # logo: 'img/icon-white.svg'
+  # favicon: 'img/favicon.png'
+
+repo_name: cahna/practipy
+repo_url: https://github.com/cahna/practipy
+
+nav:
+  - PractiPy: 'index.md'
+  - Developer Guide:
+      - Linux+Pyenv: linux-setup.md
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - markdown.extensions.codehilite:
+      guess_lang: false
+  - markdown_include.include:
+      base_path: docs
+  - admonition
+  - codehilite
+  - extra
+  - tables
+  - smarty
+
+extra_css:
+  - 'css/custom.css'
