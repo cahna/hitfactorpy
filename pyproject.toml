@@ -17,6 +17,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.10"
 typer = {version = "^0.7.0", extras = ["all"]}
+httpx = {version = "^0.23.3", extras = ["http2"]}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.0"

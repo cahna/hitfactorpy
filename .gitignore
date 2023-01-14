@@ -3,6 +3,7 @@
 .pytest_cache
 **/__pycache__
 .vscode/.ropeproject
+.tox
 
 # Misc files
 *.out
@@ -18,3 +19,6 @@
 # Test artifacts
 .coverage
 coverage.xml
+
+# Project-specific temp files
+.practipy_cache
