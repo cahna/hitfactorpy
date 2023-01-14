@@ -20,7 +20,7 @@ class Stage:
 
 
 @dataclass
-class MatchResults:
+class MatchReport:
     name: str
     raw_date: str
     date: datetime

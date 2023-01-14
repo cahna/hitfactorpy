@@ -1,35 +1,11 @@
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
 
-from ...enums import MatchLevel
+from ....enums import MatchLevel
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass(frozen=True)
-class MatchResponseLines:
-    info: List[str] = field(default_factory=list)
-    competitor: List[str] = field(default_factory=list)
-    stage: List[str] = field(default_factory=list)
-    stage_score: List[str] = field(default_factory=list)
-
-
-def parse_match_report_response_lines(response: str) -> MatchResponseLines:
-    categorized_lines = MatchResponseLines([], [], [], [])
-    response_lines = response.splitlines()
-    for line in response_lines:
-        sanitized_line = line.strip()
-        if sanitized_line.startswith("$INFO"):
-            categorized_lines.info.append(sanitized_line)
-        elif sanitized_line.startswith("E "):
-            categorized_lines.competitor.append(sanitized_line)
-        elif sanitized_line.startswith("G "):
-            categorized_lines.stage.append(sanitized_line)
-        elif sanitized_line.startswith("I "):
-            categorized_lines.stage_score.append(sanitized_line)
-    return categorized_lines
 
 
 @dataclass(frozen=True)
@@ -40,9 +16,9 @@ class ParsedMatchInfo:
     level: Optional[MatchLevel] = None
 
 
-_MATCH_REPORT_PREFIX_NAME = "$INFO Match name:"
-_MATCH_REPORT_PREFIX_DATE = "$INFO Match date:"
-_MATCH_REPORT_PREFIX_LEVEL = "$INFO Match Level:"
+_MATCH_REPORT_PREFIX_NAME = "Match name:"
+_MATCH_REPORT_PREFIX_DATE = "Match date:"
+_MATCH_REPORT_PREFIX_LEVEL = "Match Level:"
 _MATCH_REPORT_DATE_FORMAT = "%m/%d/%Y"
 
 
@@ -87,9 +63,3 @@ def parse_match_report_info_lines(info_lines: List[str]) -> ParsedMatchInfo:
             level = parse_match_level(level_text)
             logger.debug("parsed match level: %s", level)
     return ParsedMatchInfo(name=name, raw_date=raw_date, date=date, level=level)
-
-
-def parse_match_report(report_text: str):
-    report_lines = parse_match_report_response_lines(report_text)
-    match_info = parse_match_report_info_lines(report_lines.info)
-    return match_info

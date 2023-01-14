@@ -1,5 +1,3 @@
-from typing import Optional
-
 import httpx
 
 _PRACTIPY_CACHE_DIR = "../../.practipy_cache"
