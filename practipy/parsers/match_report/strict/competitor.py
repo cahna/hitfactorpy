@@ -1,14 +1,13 @@
 import logging
 import re
-from dataclasses import dataclass, field
 from enum import Enum, unique
 from typing import List, Optional
 
-from ...enums import Classification, Division, PowerFactor
-from ..csv_utils import parse_csv_row
-from .field_parsers import parse_classification, parse_division, parse_member_number, parse_power_factor
+from ...csv_utils import parse_csv_row
+from ..field_parsers import parse_classification, parse_division, parse_member_number, parse_power_factor
+from ..models import ParsedCompetitor
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 @unique
@@ -30,25 +29,12 @@ def check_competitor_columns(parsed_columns: List[str], fail_on_mismatch=False):
     check_failed = False
     expected_first_name_col = parsed_columns[CompetitorColumn.FIRST_NAME]
     if "first" not in expected_first_name_col.lower():
-        logger.error("CSV column order mismatch(?). Expected 'FirstName', but found: %s", expected_first_name_col)
+        _logger.error("CSV column order mismatch(?). Expected 'FirstName', but found: %s", expected_first_name_col)
         check_failed = True
     # TODO: other checks, or just dynamically pick the values from the column name order?
 
     if fail_on_mismatch and check_failed:
         raise ValueError("expected parsed column order mismatch detected")
-
-
-@dataclass(frozen=True)
-class ParsedCompetitor:
-    internal_id: int
-    member_number: Optional[str] = None
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    division: Optional[Division] = None
-    classification: Optional[Classification] = None
-    power_factor: Optional[PowerFactor] = None
-    dq: bool = field(default_factory=lambda: False)
-    reentry: bool = field(default_factory=lambda: False)
 
 
 def _is_dq(competitor_row: List[str]) -> bool:
@@ -62,10 +48,10 @@ def _is_dq(competitor_row: List[str]) -> bool:
 def parse_match_report_competitor_column_lines(column_lines: List[str]) -> Optional[List[str]]:
     n_header_cols = len(column_lines)
     if n_header_cols == 0:
-        logger.debug("no lines found for column names")
+        _logger.debug("no lines found for column names")
         return None
     if n_header_cols > 1:
-        logger.error("expected only one header line, but found %d", n_header_cols)
+        _logger.error("expected only one header line, but found %d", n_header_cols)
     columns: Optional[List[str]] = parse_csv_row(column_lines[0])
     return columns
 

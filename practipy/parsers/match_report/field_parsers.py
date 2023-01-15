@@ -1,10 +1,36 @@
 import logging
 import re
+from datetime import datetime
 from typing import Optional
 
-from ...enums import Classification, Division, PowerFactor, Scoring
+from ...enums import Classification, Division, MatchLevel, PowerFactor, Scoring
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
+
+
+def parse_match_level(level_text: str) -> Optional[MatchLevel]:
+    if "IV" in level_text:
+        return MatchLevel.IV
+    if "III" in level_text:
+        return MatchLevel.III
+    if "II" in level_text:
+        return MatchLevel.II
+    if "I" in level_text:
+        return MatchLevel.I
+    return None
+
+
+MATCH_REPORT_DATE_FORMAT = "%m/%d/%Y"
+
+
+def parse_match_date(date_text: str) -> Optional[datetime]:
+    try:
+        parsed_date = datetime.strptime(date_text, MATCH_REPORT_DATE_FORMAT)
+        _logger.debug("match date found: %s", date_text)
+        return parsed_date
+    except ValueError:
+        _logger.warning("failed to parse match date: %s", date_text)
+        return None
 
 
 def parse_division(s: str) -> Division:
@@ -26,7 +52,7 @@ def parse_division(s: str) -> Division:
         case "rev" | "revo" | "revolver":
             return Division.REVOLVER
         case _:
-            logger.warning("unknown division %s", s.strip().lower())
+            _logger.warning("unknown division %s", s.strip().lower())
             return Division.UNKNOWN
 
 
@@ -75,5 +101,5 @@ def parse_scoring(s: str):
         case "chrono":
             return Scoring.CHRONO
         case _:
-            logger.warning("unknown scoring: %s", s)
+            _logger.warning("unknown scoring: %s", s)
             return Scoring.UNKNOWN

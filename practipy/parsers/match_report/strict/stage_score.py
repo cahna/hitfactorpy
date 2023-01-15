@@ -1,13 +1,11 @@
 import logging
-from dataclasses import dataclass, field
 from enum import Enum, unique
 from typing import List, Optional
 
-from ...enums import Scoring
-from ..csv_utils import parse_csv_row, parse_float_value, parse_int_value
-from .field_parsers import parse_scoring
+from ...csv_utils import parse_csv_row, parse_float_value, parse_int_value
+from ..models import ParsedStageScore
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 @unique
@@ -41,36 +39,12 @@ def check_stage_score_columns(parsed_columns: List[str], fail_on_mismatch=False)
     check_failed = False
     expected_stage_id_col = parsed_columns[StageScoreColumn.STAGE_ID]
     if "stage" not in expected_stage_id_col.lower():
-        logger.error("CSV column order mismatch(?). Expected a stage id, but found: %s", expected_stage_id_col)
+        _logger.error("CSV column order mismatch(?). Expected a stage id, but found: %s", expected_stage_id_col)
         check_failed = True
     # TODO: other checks, or just dynamically pick the values from the column name order?
 
     if fail_on_mismatch and check_failed:
         raise ValueError("expected parsed stage score column order mismatch detected")
-
-
-@dataclass(frozen=True)
-class ParsedStageScore:
-    competitor_id: Optional[int] = None
-    stage_id: Optional[int] = None
-    a: int = 0
-    b: int = 0
-    c: int = 0
-    d: int = 0
-    m: int = 0
-    npm: int = 0
-    ns: int = 0
-    procedural: int = 0
-    late_shot: int = 0
-    extra_shot: int = 0
-    extra_hit: int = 0
-    other_penalty: int = 0
-    t1: float = 0.0
-    t2: float = 0.0
-    t3: float = 0.0
-    t4: float = 0.0
-    t5: float = 0.0
-    time: float = 0.0
 
 
 def parse_match_report_stage_score_lines(

@@ -1,14 +1,14 @@
 import logging
 import re
-from dataclasses import dataclass, field
 from enum import Enum, unique
 from typing import List, Optional
 
-from ...enums import Scoring
-from ..csv_utils import parse_csv_row, parse_int_value
-from .field_parsers import parse_scoring
+from ....enums import Scoring
+from ...csv_utils import parse_csv_row, parse_int_value
+from ..field_parsers import parse_scoring
+from ..models import ParsedStage
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 @unique
@@ -26,7 +26,7 @@ def check_stage_columns(parsed_columns: List[str], fail_on_mismatch=False):
     check_failed = False
     expected_stage_name_col = parsed_columns[StageColumn.STAGE_NAME]
     if "name" not in expected_stage_name_col.lower():
-        logger.error("CSV column order mismatch(?). Expected a stage name, but found: %s", expected_stage_name_col)
+        _logger.error("CSV column order mismatch(?). Expected a stage name, but found: %s", expected_stage_name_col)
         check_failed = True
     # TODO: other checks, or just dynamically pick the values from the column name order?
 
@@ -34,24 +34,13 @@ def check_stage_columns(parsed_columns: List[str], fail_on_mismatch=False):
         raise ValueError("expected parsed stage column order mismatch detected")
 
 
-@dataclass(frozen=True)
-class ParsedStage:
-    internal_id: int
-    name: Optional[str] = None
-    min_rounds: Optional[int] = 0
-    max_points: Optional[int] = 0
-    classifier: bool = field(default_factory=lambda: False)
-    classifier_number: Optional[str] = None
-    scoring_type: Scoring = Scoring.COMSTOCK
-
-
 def parse_match_report_stage_column_lines(column_lines: List[str]) -> Optional[List[str]]:
     n_header_cols = len(column_lines)
     if n_header_cols == 0:
-        logger.debug("no lines found for stage column names")
+        _logger.debug("no lines found for stage column names")
         return None
     if n_header_cols > 1:
-        logger.warning("expected only one header line, but found %d", n_header_cols)
+        _logger.warning("expected only one header line, but found %d", n_header_cols)
     columns: Optional[List[str]] = parse_csv_row(column_lines[0])
     return columns
 
