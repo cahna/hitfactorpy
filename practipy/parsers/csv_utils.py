@@ -1,4 +1,5 @@
 import csv
+from typing import Optional, Union
 
 
 def parse_csv_row(row_string: str):
@@ -7,3 +8,11 @@ def parse_csv_row(row_string: str):
     """
     values = list(csv.reader([row_string]))
     return values[0] if values else None
+
+
+def parse_int_value(v: Optional[Union[str, int]]) -> Optional[int]:
+    if isinstance(v, str) and v.isdigit():
+        return int(v)
+    if isinstance(v, (int, float, complex)) and not isinstance(v, bool):
+        return int(v)
+    return None

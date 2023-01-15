@@ -3,8 +3,7 @@ from dataclasses import dataclass, field
 from enum import Enum, unique
 from typing import List, Optional
 
-from ..csv_utils import parse_csv_row
-from .field_parsers import parse_classification, parse_division, parse_member_number, parse_power_factor
+from ..csv_utils import parse_csv_row, parse_int_value
 
 logger = logging.getLogger(__name__)
 
@@ -60,8 +59,8 @@ def parse_match_report_stage_lines(
         row = parse_csv_row(line)
         stage = ParsedStage(
             name=row[StageAttributeColumn.STAGE_NAME].strip(),
-            min_rounds=row[StageAttributeColumn.MIN_ROUNDS],
-            max_points=row[StageAttributeColumn.MAX_POINTS],
+            min_rounds=parse_int_value(row[StageAttributeColumn.MIN_ROUNDS]),
+            max_points=parse_int_value(row[StageAttributeColumn.MAX_POINTS]),
         )
         stages.append(stage)
     return stages
