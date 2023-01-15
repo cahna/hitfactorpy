@@ -5,10 +5,13 @@ from typing import List, Optional
 
 from practipy.enums import MatchLevel
 
-from ...models import Stage
-from .columns import parse_match_report_column_lines
-from .competitor import ParsedCompetitor, parse_match_report_competitor_lines
+from .competitor import (
+    ParsedCompetitor,
+    parse_match_report_competitor_column_lines,
+    parse_match_report_competitor_lines,
+)
 from .info import parse_match_report_info_lines
+from .stage import ParsedStage, parse_match_report_stage_column_lines, parse_match_report_stage_lines
 
 logger = logging.getLogger(__name__)
 
@@ -19,12 +22,14 @@ class _MatchResponseLines:
     competitor: List[str] = field(default_factory=list)
     stage: List[str] = field(default_factory=list)
     stage_score: List[str] = field(default_factory=list)
-    csv_column_names: List[str] = field(default_factory=list)
+    competitor_columns: List[str] = field(default_factory=list)
+    stage_columns: List[str] = field(default_factory=list)
 
 
 REPORT_LINE_PREFIX_INFO = "$INFO "
-REPORT_LINE_PREFIX_CSV_HEADER = "D "
+REPORT_LINE_PREFIX_COLUMNS_COMPETITORS = "D "
 REPORT_LINE_PREFIX_COMPETITOR = "E "
+REPORT_LINE_PREFIX_COLUMNS_STAGE = "F"
 REPORT_LINE_PREFIX_STAGE = "G "
 REPORT_LINE_PREFIX_STAGE_SCORE = "I "
 
@@ -32,6 +37,7 @@ REPORT_LINE_PREFIX_STAGE_SCORE = "I "
 def _parse_match_report_response_lines(response: str) -> _MatchResponseLines:
     categorized_lines = _MatchResponseLines()
     response_lines = response.splitlines()
+
     for line in response_lines:
         sanitized_line = line.strip()
         if sanitized_line.startswith(REPORT_LINE_PREFIX_INFO):
@@ -42,8 +48,12 @@ def _parse_match_report_response_lines(response: str) -> _MatchResponseLines:
             categorized_lines.stage.append(sanitized_line.partition(REPORT_LINE_PREFIX_STAGE)[-1])
         elif sanitized_line.startswith(REPORT_LINE_PREFIX_STAGE_SCORE):
             categorized_lines.stage_score.append(sanitized_line.partition(REPORT_LINE_PREFIX_STAGE_SCORE)[-1])
-        elif sanitized_line.startswith(REPORT_LINE_PREFIX_CSV_HEADER):
-            categorized_lines.csv_column_names.append(sanitized_line.partition(REPORT_LINE_PREFIX_CSV_HEADER)[-1])
+        elif sanitized_line.startswith(REPORT_LINE_PREFIX_COLUMNS_STAGE):
+            categorized_lines.stage_columns.append(sanitized_line.partition(REPORT_LINE_PREFIX_COLUMNS_STAGE)[-1])
+        elif sanitized_line.startswith(REPORT_LINE_PREFIX_COLUMNS_COMPETITORS):
+            categorized_lines.competitor_columns.append(
+                sanitized_line.partition(REPORT_LINE_PREFIX_COLUMNS_COMPETITORS)[-1]
+            )
 
     return categorized_lines
 
@@ -57,18 +67,21 @@ class ParsedMatchReport:
     practiscore_id: Optional[str] = None
     report_contents: Optional[str] = None
     competitors: Optional[List[ParsedCompetitor]] = None
-    stages: Optional[List[Stage]] = None
+    stages: Optional[List[ParsedStage]] = None
 
 
 def parse_match_report(report_text: str) -> ParsedMatchReport:
     report_lines = _parse_match_report_response_lines(report_text)
     match_info = parse_match_report_info_lines(report_lines.info)
-    columns = parse_match_report_column_lines(report_lines.csv_column_names)
-    competitors = parse_match_report_competitor_lines(report_lines.competitor, columns)
+    competitor_columns = parse_match_report_competitor_column_lines(report_lines.competitor_columns)
+    competitors = parse_match_report_competitor_lines(report_lines.competitor, competitor_columns)
+    stage_columns = parse_match_report_stage_column_lines(report_lines.stage_columns)
+    stages = parse_match_report_stage_lines(report_lines.stage, stage_columns)
     return ParsedMatchReport(
         name=match_info.name,
         raw_date=match_info.raw_date,
         date=match_info.date,
         match_level=match_info.level,
         competitors=competitors,
+        stages=stages,
     )

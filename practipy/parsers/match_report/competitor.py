@@ -56,11 +56,22 @@ def _is_dq(competitor_row: List[str]) -> bool:
     ]
 
 
+def parse_match_report_competitor_column_lines(column_lines: List[str]) -> Optional[List[str]]:
+    n_header_cols = len(column_lines)
+    if n_header_cols == 0:
+        logger.debug("no lines found for column names")
+        return None
+    if n_header_cols > 1:
+        logger.error("expected only one header line, but found %d", n_header_cols)
+    columns: Optional[List[str]] = parse_csv_row(column_lines[0])
+    return columns
+
+
 def parse_match_report_competitor_lines(
-    competitor_lines: List[str], columns: Optional[List[str]] = None
+    competitor_lines: List[str], competitor_columns: Optional[List[str]] = None
 ) -> List[ParsedCompetitor]:
-    if columns:
-        check_competitor_columns(columns)
+    if competitor_columns:
+        check_competitor_columns(competitor_columns)
     competitors: List[ParsedCompetitor] = []
     for line in competitor_lines:
         row = parse_csv_row(line)
