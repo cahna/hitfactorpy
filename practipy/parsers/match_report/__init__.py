@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from practipy.enums import MatchLevel
 
-from ....models import Stage
+from ...models import Stage
 from .columns import parse_match_report_column_lines
 from .competitor import ParsedCompetitor, parse_match_report_competitor_lines
 from .info import parse_match_report_info_lines

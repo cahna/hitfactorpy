@@ -2,13 +2,17 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
 
-from .enums import MatchLevel, Scoring
+from .enums import Classification, Division, MatchLevel, PowerFactor, Scoring
 
 
 @dataclass
 class Competitor:
     first_name: str
     last_name: str
+    division: Division
+    classification: Classification
+    power_factor: PowerFactor
+    dq: bool
 
 
 @dataclass

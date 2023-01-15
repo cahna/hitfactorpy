@@ -1,9 +1,11 @@
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum, unique
 from typing import List, Optional
 
+from ...enums import Classification, Division, PowerFactor
 from ..csv_utils import parse_csv_row
+from .field_parsers import parse_classification, parse_division, parse_power_factor
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +40,10 @@ def check_competitor_columns(parsed_columns: List[str], fail_on_mismatch=False):
 class ParsedCompetitor:
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    division: Optional[Division] = None
+    classification: Optional[Classification] = None
+    power_factor: Optional[PowerFactor] = None
+    dq: bool = field(default_factory=lambda: False)
 
 
 def parse_match_report_competitor_lines(
@@ -52,6 +58,9 @@ def parse_match_report_competitor_lines(
             ParsedCompetitor(
                 first_name=row[CompetitorAttributeColumn.FIRST_NAME],
                 last_name=row[CompetitorAttributeColumn.LAST_NAME],
+                division=parse_division(row[CompetitorAttributeColumn.DIVISION]),
+                classification=parse_classification(row[CompetitorAttributeColumn.CLASS]),
+                power_factor=parse_power_factor(row[CompetitorAttributeColumn.POWER_FACTOR]),
             )
         )
     return competitors
