@@ -3,7 +3,9 @@ from dataclasses import dataclass, field
 from enum import Enum, unique
 from typing import List, Optional
 
+from ...enums import Scoring
 from ..csv_utils import parse_csv_row, parse_int_value
+from .field_parsers import parse_scoring
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +37,9 @@ class ParsedStage:
     name: Optional[str] = None
     min_rounds: Optional[int] = 0
     max_points: Optional[int] = 0
-    # dq: bool = field(default_factory=lambda: False)
+    classifier: bool = field(default_factory=lambda: False)
+    classifier_number: Optional[str] = None
+    scoring_type: Scoring = Scoring.COMSTOCK
 
 
 def parse_match_report_stage_column_lines(column_lines: List[str]) -> Optional[List[str]]:
@@ -61,6 +65,11 @@ def parse_match_report_stage_lines(
             name=row[StageAttributeColumn.STAGE_NAME].strip(),
             min_rounds=parse_int_value(row[StageAttributeColumn.MIN_ROUNDS]),
             max_points=parse_int_value(row[StageAttributeColumn.MAX_POINTS]),
+            classifier=row[StageAttributeColumn.CLASSIFIER].strip().lower() == "yes",
+            classifier_number=row[StageAttributeColumn.CLASSIFIER_NUM].strip(),
+            scoring_type=parse_scoring(row[StageAttributeColumn.SCORING])
+            if len(row) > StageAttributeColumn.SCORING
+            else Scoring.COMSTOCK,
         )
         stages.append(stage)
     return stages

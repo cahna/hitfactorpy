@@ -65,7 +65,6 @@ class ParsedMatchReport:
     date: Optional[datetime] = None
     match_level: Optional[MatchLevel] = None
     practiscore_id: Optional[str] = None
-    report_contents: Optional[str] = None
     competitors: Optional[List[ParsedCompetitor]] = None
     stages: Optional[List[ParsedStage]] = None
 

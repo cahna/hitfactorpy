@@ -2,7 +2,7 @@ import logging
 import re
 from typing import Optional
 
-from ...enums import Classification, Division, PowerFactor
+from ...enums import Classification, Division, PowerFactor, Scoring
 
 logger = logging.getLogger(__name__)
 
@@ -62,3 +62,18 @@ def parse_power_factor(s: str) -> PowerFactor:
 
 def parse_member_number(s: str):
     return re.sub(r"[^0-9A-Z]", "", s.upper())
+
+
+def parse_scoring(s: str):
+    match s.strip().lower():
+        case "comstock":
+            return Scoring.COMSTOCK
+        case "virginia":
+            return Scoring.VIRGINIA
+        case "fixed":
+            return Scoring.FIXED_TIME
+        case "chrono":
+            return Scoring.CHRONO
+        case _:
+            logger.warning("unknown scoring: %s", s)
+            return Scoring.UNKNOWN
