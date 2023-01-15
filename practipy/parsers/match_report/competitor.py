@@ -45,6 +45,15 @@ class ParsedCompetitor:
     classification: Optional[Classification] = None
     power_factor: Optional[PowerFactor] = None
     dq: bool = field(default_factory=lambda: False)
+    reentry: bool = field(default_factory=lambda: False)
+
+
+def _is_dq(competitor_row: List[str]) -> bool:
+    return "yes" in [
+        competitor_row[CompetitorAttributeColumn.DQ_PISTOL].lower(),
+        competitor_row[CompetitorAttributeColumn.DQ_RIFLE].lower(),
+        competitor_row[CompetitorAttributeColumn.DQ_SHOTGUN].lower(),
+    ]
 
 
 def parse_match_report_competitor_lines(
@@ -55,14 +64,15 @@ def parse_match_report_competitor_lines(
     competitors: List[ParsedCompetitor] = []
     for line in competitor_lines:
         row = parse_csv_row(line)
-        competitors.append(
-            ParsedCompetitor(
-                member_number=parse_member_number(row[CompetitorAttributeColumn.MEMBER_NUM]),
-                first_name=row[CompetitorAttributeColumn.FIRST_NAME].strip(),
-                last_name=row[CompetitorAttributeColumn.LAST_NAME].strip(),
-                division=parse_division(row[CompetitorAttributeColumn.DIVISION]),
-                classification=parse_classification(row[CompetitorAttributeColumn.CLASS]),
-                power_factor=parse_power_factor(row[CompetitorAttributeColumn.POWER_FACTOR]),
-            )
+        competitor = ParsedCompetitor(
+            member_number=parse_member_number(row[CompetitorAttributeColumn.MEMBER_NUM]),
+            first_name=row[CompetitorAttributeColumn.FIRST_NAME].strip(),
+            last_name=row[CompetitorAttributeColumn.LAST_NAME].strip(),
+            division=parse_division(row[CompetitorAttributeColumn.DIVISION]),
+            classification=parse_classification(row[CompetitorAttributeColumn.CLASS]),
+            power_factor=parse_power_factor(row[CompetitorAttributeColumn.POWER_FACTOR]),
+            reentry=row[CompetitorAttributeColumn.REENTRY].lower() == "yes",
+            dq=_is_dq(row),
         )
+        competitors.append(competitor)
     return competitors
