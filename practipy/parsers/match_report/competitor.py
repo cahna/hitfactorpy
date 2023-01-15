@@ -1,4 +1,5 @@
 import logging
+import re
 from dataclasses import dataclass, field
 from enum import Enum, unique
 from typing import List, Optional
@@ -11,7 +12,8 @@ logger = logging.getLogger(__name__)
 
 
 @unique
-class CompetitorAttributeColumn(int, Enum):
+class CompetitorColumn(int, Enum):
+    ID = 0
     MEMBER_NUM = 1
     FIRST_NAME = 2
     LAST_NAME = 3
@@ -26,7 +28,7 @@ class CompetitorAttributeColumn(int, Enum):
 
 def check_competitor_columns(parsed_columns: List[str], fail_on_mismatch=False):
     check_failed = False
-    expected_first_name_col = parsed_columns[CompetitorAttributeColumn.FIRST_NAME]
+    expected_first_name_col = parsed_columns[CompetitorColumn.FIRST_NAME]
     if "first" not in expected_first_name_col.lower():
         logger.error("CSV column order mismatch(?). Expected 'FirstName', but found: %s", expected_first_name_col)
         check_failed = True
@@ -38,6 +40,7 @@ def check_competitor_columns(parsed_columns: List[str], fail_on_mismatch=False):
 
 @dataclass(frozen=True)
 class ParsedCompetitor:
+    internal_id: int
     member_number: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
@@ -50,9 +53,9 @@ class ParsedCompetitor:
 
 def _is_dq(competitor_row: List[str]) -> bool:
     return "yes" in [
-        competitor_row[CompetitorAttributeColumn.DQ_PISTOL].lower(),
-        competitor_row[CompetitorAttributeColumn.DQ_RIFLE].lower(),
-        competitor_row[CompetitorAttributeColumn.DQ_SHOTGUN].lower(),
+        competitor_row[CompetitorColumn.DQ_PISTOL].lower(),
+        competitor_row[CompetitorColumn.DQ_RIFLE].lower(),
+        competitor_row[CompetitorColumn.DQ_SHOTGUN].lower(),
     ]
 
 
@@ -76,13 +79,14 @@ def parse_match_report_competitor_lines(
     for line in competitor_lines:
         row = parse_csv_row(line)
         competitor = ParsedCompetitor(
-            member_number=parse_member_number(row[CompetitorAttributeColumn.MEMBER_NUM]),
-            first_name=row[CompetitorAttributeColumn.FIRST_NAME].strip(),
-            last_name=row[CompetitorAttributeColumn.LAST_NAME].strip(),
-            division=parse_division(row[CompetitorAttributeColumn.DIVISION]),
-            classification=parse_classification(row[CompetitorAttributeColumn.CLASS]),
-            power_factor=parse_power_factor(row[CompetitorAttributeColumn.POWER_FACTOR]),
-            reentry=row[CompetitorAttributeColumn.REENTRY].lower() == "yes",
+            internal_id=int(re.sub(r"[^0-9]", "", row[CompetitorColumn.ID].strip())),
+            member_number=parse_member_number(row[CompetitorColumn.MEMBER_NUM]),
+            first_name=row[CompetitorColumn.FIRST_NAME].strip(),
+            last_name=row[CompetitorColumn.LAST_NAME].strip(),
+            division=parse_division(row[CompetitorColumn.DIVISION]),
+            classification=parse_classification(row[CompetitorColumn.CLASS]),
+            power_factor=parse_power_factor(row[CompetitorColumn.POWER_FACTOR]),
+            reentry=row[CompetitorColumn.REENTRY].lower() == "yes",
             dq=_is_dq(row),
         )
         competitors.append(competitor)

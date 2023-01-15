@@ -1,4 +1,5 @@
 import logging
+import re
 from dataclasses import dataclass, field
 from enum import Enum, unique
 from typing import List, Optional
@@ -11,7 +12,8 @@ logger = logging.getLogger(__name__)
 
 
 @unique
-class StageAttributeColumn(int, Enum):
+class StageColumn(int, Enum):
+    ID = 0
     MIN_ROUNDS = 2
     MAX_POINTS = 3
     CLASSIFIER = 4
@@ -22,7 +24,7 @@ class StageAttributeColumn(int, Enum):
 
 def check_stage_columns(parsed_columns: List[str], fail_on_mismatch=False):
     check_failed = False
-    expected_stage_name_col = parsed_columns[StageAttributeColumn.STAGE_NAME]
+    expected_stage_name_col = parsed_columns[StageColumn.STAGE_NAME]
     if "name" not in expected_stage_name_col.lower():
         logger.error("CSV column order mismatch(?). Expected a stage name, but found: %s", expected_stage_name_col)
         check_failed = True
@@ -34,6 +36,7 @@ def check_stage_columns(parsed_columns: List[str], fail_on_mismatch=False):
 
 @dataclass(frozen=True)
 class ParsedStage:
+    internal_id: int
     name: Optional[str] = None
     min_rounds: Optional[int] = 0
     max_points: Optional[int] = 0
@@ -62,13 +65,14 @@ def parse_match_report_stage_lines(
     for line in stage_lines:
         row = parse_csv_row(line)
         stage = ParsedStage(
-            name=row[StageAttributeColumn.STAGE_NAME].strip(),
-            min_rounds=parse_int_value(row[StageAttributeColumn.MIN_ROUNDS]),
-            max_points=parse_int_value(row[StageAttributeColumn.MAX_POINTS]),
-            classifier=row[StageAttributeColumn.CLASSIFIER].strip().lower() == "yes",
-            classifier_number=row[StageAttributeColumn.CLASSIFIER_NUM].strip(),
-            scoring_type=parse_scoring(row[StageAttributeColumn.SCORING])
-            if len(row) > StageAttributeColumn.SCORING
+            internal_id=int(re.sub(r"[^0-9]", "", row[StageColumn.ID].strip())),
+            name=row[StageColumn.STAGE_NAME].strip(),
+            min_rounds=parse_int_value(row[StageColumn.MIN_ROUNDS]),
+            max_points=parse_int_value(row[StageColumn.MAX_POINTS]),
+            classifier=row[StageColumn.CLASSIFIER].strip().lower() == "yes",
+            classifier_number=row[StageColumn.CLASSIFIER_NUM].strip(),
+            scoring_type=parse_scoring(row[StageColumn.SCORING])
+            if len(row) > StageColumn.SCORING
             else Scoring.COMSTOCK,
         )
         stages.append(stage)

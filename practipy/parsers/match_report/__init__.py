@@ -3,8 +3,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional
 
-from practipy.enums import MatchLevel
-
+from ...enums import MatchLevel
 from .competitor import (
     ParsedCompetitor,
     parse_match_report_competitor_column_lines,
@@ -12,6 +11,7 @@ from .competitor import (
 )
 from .info import parse_match_report_info_lines
 from .stage import ParsedStage, parse_match_report_stage_column_lines, parse_match_report_stage_lines
+from .stage_score import ParsedStageScore, parse_match_report_stage_score_lines
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +67,7 @@ class ParsedMatchReport:
     practiscore_id: Optional[str] = None
     competitors: Optional[List[ParsedCompetitor]] = None
     stages: Optional[List[ParsedStage]] = None
+    stage_scores: Optional[List[ParsedStageScore]] = None
 
 
 def parse_match_report(report_text: str) -> ParsedMatchReport:
@@ -76,6 +77,7 @@ def parse_match_report(report_text: str) -> ParsedMatchReport:
     competitors = parse_match_report_competitor_lines(report_lines.competitor, competitor_columns)
     stage_columns = parse_match_report_stage_column_lines(report_lines.stage_columns)
     stages = parse_match_report_stage_lines(report_lines.stage, stage_columns)
+    stage_scores = parse_match_report_stage_score_lines(report_lines.stage_score)
     return ParsedMatchReport(
         name=match_info.name,
         raw_date=match_info.raw_date,
@@ -83,4 +85,5 @@ def parse_match_report(report_text: str) -> ParsedMatchReport:
         match_level=match_info.level,
         competitors=competitors,
         stages=stages,
+        stage_scores=stage_scores,
     )
