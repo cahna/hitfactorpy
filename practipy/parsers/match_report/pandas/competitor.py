@@ -1,11 +1,11 @@
 from enum import Enum, unique
 from io import StringIO
-from typing import List
+from typing import Any, Callable, List, Mapping
 
 import pandas as pd
 from pandas._typing import FilePath, ReadCsvBuffer
 
-from ..field_parsers import parse_boolean, parse_classification, parse_division, parse_member_number, parse_power_factor
+from ..fields import parse_boolean, parse_classification, parse_division, parse_member_number, parse_power_factor
 from ..models import ParsedCompetitor
 
 
@@ -23,23 +23,30 @@ class CompetitorColumnName(str, Enum):
     DIVISION = "Division"
     POWER_FACTOR = "Power Factor"
 
+    # Below this line are custom columns added to the pandas dataframe
+    IS_DQ = "is_dq"
+
+
+CONVERTERS: Mapping[str, Callable[[str], Any]] = {
+    CompetitorColumnName.MEMBER_NUM: parse_member_number,
+    CompetitorColumnName.DIVISION: parse_division,
+    CompetitorColumnName.CLASS: parse_classification,
+    CompetitorColumnName.POWER_FACTOR: parse_power_factor,
+    CompetitorColumnName.REENTRY: parse_boolean,
+    CompetitorColumnName.DQ_PISTOL: parse_boolean,
+    CompetitorColumnName.DQ_RIFLE: parse_boolean,
+    CompetitorColumnName.DQ_SHOTGUN: parse_boolean,
+}
+
 
 def read_competitor_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]):
+
     df = pd.read_csv(
         filepath_or_buffer,
         index_col="Comp",
-        converters={
-            CompetitorColumnName.MEMBER_NUM: parse_member_number,
-            CompetitorColumnName.DIVISION: parse_division,
-            CompetitorColumnName.CLASS: parse_classification,
-            CompetitorColumnName.POWER_FACTOR: parse_power_factor,
-            CompetitorColumnName.REENTRY: parse_boolean,
-            CompetitorColumnName.DQ_PISTOL: parse_boolean,
-            CompetitorColumnName.DQ_RIFLE: parse_boolean,
-            CompetitorColumnName.DQ_SHOTGUN: parse_boolean,
-        },
+        converters=CONVERTERS,
     )
-    df["is_dq"] = (
+    df[CompetitorColumnName.IS_DQ] = (
         df[CompetitorColumnName.DQ_PISTOL] | df[CompetitorColumnName.DQ_RIFLE] | df[CompetitorColumnName.DQ_SHOTGUN]
     )
     return df
@@ -68,7 +75,7 @@ def parse_competitor_info(competitor_csv_text: str) -> List[ParsedCompetitor]:
             df[CompetitorColumnName.DIVISION],
             df[CompetitorColumnName.POWER_FACTOR],
             df[CompetitorColumnName.REENTRY],
-            df["is_dq"],
+            df[CompetitorColumnName.IS_DQ],
         )
     ]
 

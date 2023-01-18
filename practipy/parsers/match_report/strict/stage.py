@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from ....enums import Scoring
 from ...csv_utils import parse_csv_row, parse_int_value
-from ..field_parsers import parse_scoring
+from ..fields import parse_scoring
 from ..models import ParsedStage
 
 _logger = logging.getLogger(__name__)

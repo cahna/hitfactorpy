@@ -15,7 +15,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.10,<3.12"
 typer = {version = "^0.7.0", extras = ["all"]}
 httpx = {version = "^0.23.3", extras = ["http2"]}
 pandas = "^1.5.2"
@@ -33,6 +33,7 @@ pytest-cov = "^4.0.0"
 deptry = "^0.7.1"
 coverage = "^7.0.5"
 codecov = "^2.1.12"
+pandas-stubs = "^1.5.2.230105"
 
 [tool.poetry.group.docs]
 optional = true
@@ -56,6 +57,7 @@ warn_unused_configs = true
 line-length = 120
 target_version = ['py310']
 include = '\.pyi?$'
+ignore_missing_imports = ['jinja2']
 exclude = '''
 (
   /(

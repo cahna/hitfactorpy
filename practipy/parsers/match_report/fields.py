@@ -1,7 +1,7 @@
 import logging
 import re
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
 from ...enums import Classification, Division, MatchLevel, PowerFactor, Scoring
 
@@ -9,6 +9,8 @@ _logger = logging.getLogger(__name__)
 
 
 def parse_match_level(level_text: str) -> Optional[MatchLevel]:
+    if not level_text:
+        return None
     if "IV" in level_text:
         return MatchLevel.IV
     if "III" in level_text:
@@ -28,13 +30,17 @@ def parse_match_date(date_text: str) -> Optional[datetime]:
         parsed_date = datetime.strptime(date_text, MATCH_REPORT_DATE_FORMAT)
         _logger.debug("match date found: %s", date_text)
         return parsed_date
-    except ValueError:
+    except (ValueError, TypeError):
         _logger.warning("failed to parse match date: %s", date_text)
         return None
 
 
+def _sanitize_string(s: Any) -> str:
+    return (s if (s and isinstance(s, str)) else "").strip()
+
+
 def parse_division(s: str) -> Division:
-    match s.strip().lower():
+    match _sanitize_string(s).lower():
         case "pcc" | "pistol caliber carbine":
             return Division.PCC
         case "open":
@@ -52,12 +58,12 @@ def parse_division(s: str) -> Division:
         case "rev" | "revo" | "revolver":
             return Division.REVOLVER
         case _:
-            _logger.warning("unknown division %s", s.strip().lower())
+            _logger.warning("unknown division %s", s)
             return Division.UNKNOWN
 
 
 def parse_classification(s: str) -> Classification:
-    match s.strip().lower():
+    match _sanitize_string(s).lower():
         case "gm" | "grandmaster" | "g":
             return Classification.GM
         case "m" | "master":
@@ -77,7 +83,7 @@ def parse_classification(s: str) -> Classification:
 
 
 def parse_power_factor(s: str) -> PowerFactor:
-    match s.strip().lower():
+    match _sanitize_string(s).lower():
         case "major":
             return PowerFactor.MAJOR
         case "minor":
@@ -91,7 +97,7 @@ def parse_member_number(s: str):
 
 
 def parse_scoring(s: str):
-    match s.strip().lower():
+    match _sanitize_string(s).strip().lower():
         case "comstock":
             return Scoring.COMSTOCK
         case "virginia":

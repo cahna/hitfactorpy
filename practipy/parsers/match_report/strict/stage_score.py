@@ -10,6 +10,8 @@ _logger = logging.getLogger(__name__)
 
 @unique
 class StageScoreColumn(int, Enum):
+    """Expected column indices"""
+
     STAGE_ID = 1
     SHOOTER_ID = 2
     A = 5

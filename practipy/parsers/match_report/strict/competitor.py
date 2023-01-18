@@ -4,7 +4,7 @@ from enum import Enum, unique
 from typing import List, Optional
 
 from ...csv_utils import parse_csv_row
-from ..field_parsers import parse_classification, parse_division, parse_member_number, parse_power_factor
+from ..fields import parse_classification, parse_division, parse_member_number, parse_power_factor
 from ..models import ParsedCompetitor
 
 _logger = logging.getLogger(__name__)
@@ -12,6 +12,8 @@ _logger = logging.getLogger(__name__)
 
 @unique
 class CompetitorColumn(int, Enum):
+    """Expected column indices"""
+
     ID = 0
     MEMBER_NUM = 1
     FIRST_NAME = 2
