@@ -103,3 +103,7 @@ def parse_scoring(s: str):
         case _:
             _logger.warning("unknown scoring: %s", s)
             return Scoring.UNKNOWN
+
+
+def parse_boolean(s: str):
+    return (s or "").lower() == "yes"
