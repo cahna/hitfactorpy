@@ -1,83 +1,122 @@
-import logging
 from enum import Enum, unique
-from typing import List, Optional
+from io import StringIO
+from typing import Any, Callable, List, Mapping
 
-from ...csv_utils import parse_csv_row, parse_float_value, parse_int_value
+import pandas as pd
+from pandas._typing import FilePath, ReadCsvBuffer
+
 from ..models import ParsedStageScore
-
-_logger = logging.getLogger(__name__)
 
 
 @unique
-class StageScoreColumn(int, Enum):
-    STAGE_ID = 1
-    SHOOTER_ID = 2
-    A = 5
-    B = 6
-    C = 7
-    D = 8
-    M = 9
-    NS = 10
-    PROC = 11
-    LATE_SHOT = 14
-    EXTRA_SHOT = 15
-    EXTRA_HIT = 16
-    NPM = 17
-    OTHER_PENALTY = 18
-    PENALTY_POINTS = 19
-    T1 = 20
-    T2 = 21
-    T3 = 22
-    T4 = 23
-    T5 = 24
-    TIME = 25
-    RAW_POINTS = 26
-    TOTAL_POINTS = 27
+class StageScoreColumnName(str, Enum):
+    STAGE_ID = "Stage"
+    COMPETITOR_ID = "Comp"
+    A = "A"
+    B = "B"
+    C = "C"
+    D = "D"
+    M = "Miss"
+    NS = "No Shoot"
+    PROC = "Procedural"
+    LATE_SHOT = "Late Shot"
+    EXTRA_SHOT = "Extra Shot"
+    EXTRA_HIT = "Extra Hit"
+    NPM = "No Penalty Miss"
+    OTHER_PENALTY = "Additional Penalty"
+    PENALTY_POINTS = "Total Penalty"
+    T1 = "T1"
+    T2 = "T2"
+    T3 = "T3"
+    T4 = "T4"
+    T5 = "T5"
+    TIME = "Time"
+    RAW_POINTS = "Raw Points"
+    TOTAL_POINTS = "Total Points"
 
 
-def check_stage_score_columns(parsed_columns: List[str], fail_on_mismatch=False):
-    check_failed = False
-    expected_stage_id_col = parsed_columns[StageScoreColumn.STAGE_ID]
-    if "stage" not in expected_stage_id_col.lower():
-        _logger.error("CSV column order mismatch(?). Expected a stage id, but found: %s", expected_stage_id_col)
-        check_failed = True
-    # TODO: other checks, or just dynamically pick the values from the column name order?
-
-    if fail_on_mismatch and check_failed:
-        raise ValueError("expected parsed stage score column order mismatch detected")
+CSV_CONVERTERS: Mapping[str, Callable[[str], Any]] = {
+    # StageScoreColumnName.SCORING: parse_scoring,
+}
 
 
-def parse_match_report_stage_score_lines(
-    stage_lines: List[str], stage_columns: Optional[List[str]] = None
-) -> List[ParsedStageScore]:
-    if stage_columns:
-        check_stage_score_columns(stage_columns)
-    stages: List[ParsedStageScore] = []
-    for line in stage_lines:
-        row = parse_csv_row(line)
-        stage = ParsedStageScore(
-            # Integer attributes
-            stage_id=parse_int_value(row[StageScoreColumn.STAGE_ID].strip()),
-            competitor_id=parse_int_value(row[StageScoreColumn.SHOOTER_ID].strip()),
-            a=parse_int_value(row[StageScoreColumn.A].strip()) or 0,
-            b=parse_int_value(row[StageScoreColumn.B].strip()) or 0,
-            c=parse_int_value(row[StageScoreColumn.C].strip()) or 0,
-            d=parse_int_value(row[StageScoreColumn.D].strip()) or 0,
-            m=parse_int_value(row[StageScoreColumn.M].strip()) or 0,
-            npm=parse_int_value(row[StageScoreColumn.NPM].strip()) or 0,
-            ns=parse_int_value(row[StageScoreColumn.NS].strip()) or 0,
-            procedural=parse_int_value(row[StageScoreColumn.PROC].strip()) or 0,
-            late_shot=parse_int_value(row[StageScoreColumn.LATE_SHOT].strip()) or 0,
-            extra_shot=parse_int_value(row[StageScoreColumn.EXTRA_SHOT].strip()) or 0,
-            extra_hit=parse_int_value(row[StageScoreColumn.EXTRA_HIT].strip()) or 0,
-            other_penalty=parse_int_value(row[StageScoreColumn.OTHER_PENALTY].strip()) or 0,
-            # Float attributes
-            t1=parse_float_value(row[StageScoreColumn.T1].strip()) or 0.0,
-            t2=parse_float_value(row[StageScoreColumn.T2].strip()) or 0.0,
-            t3=parse_float_value(row[StageScoreColumn.T3].strip()) or 0.0,
-            t4=parse_float_value(row[StageScoreColumn.T4].strip()) or 0.0,
-            t5=parse_float_value(row[StageScoreColumn.T5].strip()) or 0.0,
-            time=parse_float_value(row[StageScoreColumn.TIME].strip()) or 0.0,
+def read_stage_scores_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]):
+    df = pd.read_csv(
+        filepath_or_buffer,
+        index_col=None,
+        converters=CSV_CONVERTERS,
+    )
+    # df['hit_factor'] = (df['A'] * 5) # TODO
+    return df
+
+
+def parse_stage_scores(stage_scores_csv: str) -> List[ParsedStageScore]:
+    df = read_stage_scores_csv(StringIO(stage_scores_csv))
+    stage_scores = [
+        ParsedStageScore(
+            stage_id=stage_id,
+            competitor_id=competitor_id,
+            a=a,
+            b=b,
+            c=c,
+            d=d,
+            m=m,
+            npm=npm,
+            ns=ns,
+            procedural=procedural,
+            late_shot=late_shot,
+            extra_shot=extra_shot,
+            extra_hit=extra_hit,
+            other_penalty=other_penalty,
+            t1=t1,
+            t2=t2,
+            t3=t3,
+            t4=t4,
+            t5=t5,
+            time=time,
         )
-        stages.append(stage)
-    return stages
+        for (
+            stage_id,
+            competitor_id,
+            a,
+            b,
+            c,
+            d,
+            m,
+            npm,
+            ns,
+            procedural,
+            late_shot,
+            extra_shot,
+            extra_hit,
+            other_penalty,
+            t1,
+            t2,
+            t3,
+            t4,
+            t5,
+            time,
+        ) in zip(
+            df[StageScoreColumnName.STAGE_ID],
+            df[StageScoreColumnName.COMPETITOR_ID],
+            df[StageScoreColumnName.A],
+            df[StageScoreColumnName.B],
+            df[StageScoreColumnName.C],
+            df[StageScoreColumnName.D],
+            df[StageScoreColumnName.M],
+            df[StageScoreColumnName.NPM],
+            df[StageScoreColumnName.NS],
+            df[StageScoreColumnName.PROC],
+            df[StageScoreColumnName.LATE_SHOT],
+            df[StageScoreColumnName.EXTRA_SHOT],
+            df[StageScoreColumnName.EXTRA_HIT],
+            df[StageScoreColumnName.OTHER_PENALTY],
+            df[StageScoreColumnName.T1],
+            df[StageScoreColumnName.T2],
+            df[StageScoreColumnName.T3],
+            df[StageScoreColumnName.T4],
+            df[StageScoreColumnName.T5],
+            df[StageScoreColumnName.TIME],
+        )
+    ]
+    return stage_scores

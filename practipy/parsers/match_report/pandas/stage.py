@@ -20,23 +20,23 @@ class StageColumnName(str, Enum):
     SCORING = "ScoringType"
 
 
-CONVERTERS: Mapping[str, Callable[[str], Any]] = {
+CSV_CONVERTERS: Mapping[str, Callable[[str], Any]] = {
     StageColumnName.SCORING: parse_scoring,
     StageColumnName.CLASSIFIER: parse_boolean,
 }
 
 
-def read_stage_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]):
+def read_stages_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]):
     df = pd.read_csv(
         filepath_or_buffer,
         index_col="Number",
-        converters=CONVERTERS,
+        converters=CSV_CONVERTERS,
     )
     return df
 
 
-def parse_stage_info(stage_csv_text: str) -> List[ParsedStage]:
-    df = read_stage_csv(StringIO(stage_csv_text))
+def parse_stages(stage_csv_text: str) -> List[ParsedStage]:
+    df = read_stages_csv(StringIO(stage_csv_text))
     stages = [
         ParsedStage(
             internal_id=internal_id,

@@ -39,8 +39,7 @@ CONVERTERS: Mapping[str, Callable[[str], Any]] = {
 }
 
 
-def read_competitor_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]):
-
+def read_competitors_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]):
     df = pd.read_csv(
         filepath_or_buffer,
         index_col="Comp",
@@ -52,8 +51,8 @@ def read_competitor_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | Re
     return df
 
 
-def parse_competitor_info(competitor_csv_text: str) -> List[ParsedCompetitor]:
-    df = read_competitor_csv(StringIO(competitor_csv_text))
+def parse_competitors(competitor_csv_text: str) -> List[ParsedCompetitor]:
+    df = read_competitors_csv(StringIO(competitor_csv_text))
     competitors = [
         ParsedCompetitor(
             internal_id=internal_id,
