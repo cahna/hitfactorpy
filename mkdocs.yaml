@@ -5,8 +5,8 @@ site_url: https://localhost/
 theme:
   name: 'material'
   palette:
-    primary: 'green'
-    accent: 'orange'
+    primary: 'red'
+    accent: 'blue'
   # logo: 'img/icon-white.svg'
   # favicon: 'img/favicon.png'
 
