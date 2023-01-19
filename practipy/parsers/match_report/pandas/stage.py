@@ -11,7 +11,9 @@ from ..models import ParsedStage
 
 @unique
 class StageColumnName(str, Enum):
-    ID = "index"
+    """Known competitor column names. May also include dataframe references and custom columns added to the dataframe after parsing."""
+
+    ID = "index"  # ex: used to reference `df.index`
     MIN_ROUNDS = "Minimum Rounds"
     MAX_POINTS = "Maximum Points"
     CLASSIFIER = "Classifier"
@@ -27,6 +29,7 @@ CSV_CONVERTERS: Mapping[str, Callable[[str], Any]] = {
 
 
 def read_stages_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]):
+    """Load a dataframe with stages parsed from csv"""
     df = pd.read_csv(
         filepath_or_buffer,
         index_col="Number",
@@ -36,6 +39,7 @@ def read_stages_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | ReadCs
 
 
 def parse_stages(stage_csv_text: str) -> List[ParsedStage]:
+    """Parse CSV text into ParsedStage objects. Uses pandas for parsing."""
     df = read_stages_csv(StringIO(stage_csv_text))
     stages = [
         ParsedStage(

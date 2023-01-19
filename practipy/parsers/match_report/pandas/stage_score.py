@@ -10,6 +10,8 @@ from ..models import ParsedStageScore
 
 @unique
 class StageScoreColumnName(str, Enum):
+    """Known competitor column names. May also includes dataframe references and custom columns added to the dataframe after parsing."""
+
     STAGE_ID = "Stage"
     COMPETITOR_ID = "Comp"
     A = "A"
@@ -41,6 +43,7 @@ CSV_CONVERTERS: Mapping[str, Callable[[str], Any]] = {
 
 
 def read_stage_scores_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]):
+    """Load a dataframe with stage scores as rows parsed from csv"""
     df = pd.read_csv(
         filepath_or_buffer,
         index_col=None,
@@ -51,6 +54,7 @@ def read_stage_scores_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | 
 
 
 def parse_stage_scores(stage_scores_csv: str) -> List[ParsedStageScore]:
+    """Parse CSV text into ParsedStageScore objects. Uses pandas for parsing."""
     df = read_stage_scores_csv(StringIO(stage_scores_csv))
     stage_scores = [
         ParsedStageScore(

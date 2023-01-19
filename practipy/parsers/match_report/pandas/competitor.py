@@ -11,6 +11,8 @@ from ..models import ParsedCompetitor
 
 @unique
 class CompetitorColumnName(str, Enum):
+    """Known competitor column names. Also includes dataframe references and custom columns added to the dataframe."""
+
     ID = "index"
     MEMBER_NUM = "USPSA"
     FIRST_NAME = "FirstName"
@@ -40,6 +42,7 @@ CONVERTERS: Mapping[str, Callable[[str], Any]] = {
 
 
 def read_competitors_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]):
+    """Load a dataframe with competitor rows parsed from csv"""
     df = pd.read_csv(
         filepath_or_buffer,
         index_col="Comp",
@@ -52,6 +55,7 @@ def read_competitors_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | R
 
 
 def parse_competitors(competitor_csv_text: str) -> List[ParsedCompetitor]:
+    """Parse CSV text into ParsedCompetitor objects. Uses pandas for parsing."""
     df = read_competitors_csv(StringIO(competitor_csv_text))
     competitors = [
         ParsedCompetitor(

@@ -7,6 +7,8 @@ from ...enums import Classification, Division, MatchLevel, PowerFactor, Scoring
 
 @dataclass(frozen=True)
 class ParsedCompetitor:
+    """Competitor info parsed from match report"""
+
     internal_id: int
     member_number: Optional[str] = None
     first_name: Optional[str] = None
@@ -20,6 +22,8 @@ class ParsedCompetitor:
 
 @dataclass(frozen=True)
 class ParsedStage:
+    """Stage info parsed from match report"""
+
     internal_id: int
     name: Optional[str] = None
     min_rounds: Optional[int] = 0
@@ -31,6 +35,8 @@ class ParsedStage:
 
 @dataclass(frozen=True)
 class ParsedStageScore:
+    """Stage score parsed from match report"""
+
     competitor_id: Optional[int] = None
     stage_id: Optional[int] = None
     a: int = 0
@@ -55,6 +61,8 @@ class ParsedStageScore:
 
 @dataclass(frozen=True)
 class ParsedMatchInfo:
+    """Match info parsed from header of match report"""
+
     name: Optional[str] = None
     raw_date: Optional[str] = None
     date: Optional[datetime] = None
@@ -63,6 +71,8 @@ class ParsedMatchInfo:
 
 @dataclass(frozen=True)
 class ParsedMatchReport(ParsedMatchInfo):
+    """All data that could be parsed from the match report"""
+
     competitors: Optional[List[ParsedCompetitor]] = None
     stages: Optional[List[ParsedStage]] = None
     stage_scores: Optional[List[ParsedStageScore]] = None

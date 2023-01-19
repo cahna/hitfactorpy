@@ -20,5 +20,8 @@
 .coverage
 coverage.xml
 
+# mkdocs output
+site/
+
 # Project-specific temp files
 .practipy_cache
