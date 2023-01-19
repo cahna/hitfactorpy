@@ -1,3 +1,5 @@
+import pytest
+
 from hitfactorpy.parsers.match_report.strict import parse_match_report
 
 from .mock_data import EXAMPLE_REPORT
@@ -13,3 +15,26 @@ def test_parse_match_report():
     assert len(report.competitors) == 72
     assert report.stage_scores
     assert len(report.stage_scores) == 494
+
+
+@pytest.mark.parametrize(
+    "test_input",
+    [
+        "",
+        "$PRACTISCORE",
+        "$INFO",
+        "$END",
+        "$\nD",
+        "$PRACTISCORE \n$INFO \nZ \nA \nD \nE \nF \nG \nH \nI \n$END" "",
+    ],
+)
+def test_parse_match_report_nothing_parsed(test_input):
+    report = parse_match_report(test_input)
+    assert report
+    assert report.name is None
+    assert report.raw_date is None
+    assert report.date is None
+    assert report.match_level is None
+    assert len(report.stages) == 0
+    assert len(report.competitors) == 0
+    assert len(report.stage_scores) == 0

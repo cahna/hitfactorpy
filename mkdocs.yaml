@@ -14,7 +14,7 @@ repo_name: cahna/hitfactorpy
 repo_url: https://github.com/cahna/hitfactorpy
 
 nav:
-  - hitfactorpy: 'index.md'
+  - Introduction: 'index.md'
   - Developer Guide:
       - Linux+Pyenv: linux-setup.md
 

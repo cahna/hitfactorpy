@@ -5,6 +5,7 @@ from typing import Any, Callable, List, Mapping
 import pandas as pd
 from pandas._typing import FilePath, ReadCsvBuffer
 
+from ..fields import parse_boolean, parse_power_factor
 from ..models import ParsedStageScore
 
 
@@ -14,6 +15,8 @@ class StageScoreColumnName(str, Enum):
 
     STAGE_ID = "Stage"
     COMPETITOR_ID = "Comp"
+    DQ = "DQ"
+    DNF = "DNF"
     A = "A"
     B = "B"
     C = "C"
@@ -35,10 +38,13 @@ class StageScoreColumnName(str, Enum):
     TIME = "Time"
     RAW_POINTS = "Raw Points"
     TOTAL_POINTS = "Total Points"
+    STAGE_POWER_FACTOR = "Stage Power Factor"
 
 
 CSV_CONVERTERS: Mapping[str, Callable[[str], Any]] = {
-    # StageScoreColumnName.SCORING: parse_scoring,
+    StageScoreColumnName.DQ: parse_boolean,
+    StageScoreColumnName.DNF: parse_boolean,
+    StageScoreColumnName.STAGE_POWER_FACTOR: parse_power_factor,
 }
 
 

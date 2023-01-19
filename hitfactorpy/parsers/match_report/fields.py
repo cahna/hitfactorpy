@@ -95,11 +95,11 @@ def parse_power_factor(s: str) -> PowerFactor:
 
 
 def parse_member_number(s: str):
-    return re.sub(r"[^0-9A-Z]", "", s.upper())
+    return re.sub(r"[^0-9A-Z]", "", _sanitize_string(s).upper())
 
 
 def parse_scoring(s: str):
-    match _sanitize_string(s).strip().lower():
+    match _sanitize_string(s).lower():
         case "comstock":
             return Scoring.COMSTOCK
         case "virginia":
@@ -114,4 +114,4 @@ def parse_scoring(s: str):
 
 
 def parse_boolean(s: str):
-    return (s or "").lower() == "yes"
+    return _sanitize_string(s).lower() == "yes"

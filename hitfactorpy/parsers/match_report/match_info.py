@@ -1,18 +1,18 @@
 import logging
-from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
 
 from ...enums import MatchLevel
+from .constants import MatchReportInfoSectionFields
 from .fields import parse_match_date, parse_match_level
 from .models import ParsedMatchInfo
 
 _logger = logging.getLogger(__name__)
 
 
-MATCH_REPORT_PREFIX_NAME = "Match name:"
-MATCH_REPORT_PREFIX_DATE = "Match date:"
-MATCH_REPORT_PREFIX_LEVEL = "Match Level:"
+MATCH_REPORT_PREFIX_NAME = f"{MatchReportInfoSectionFields.MATCH_NAME}:"
+MATCH_REPORT_PREFIX_DATE = f"{MatchReportInfoSectionFields.MATCH_DATE}:"
+MATCH_REPORT_PREFIX_LEVEL = f"{MatchReportInfoSectionFields.MATCH_LEVEL}:"
 
 
 def parse_match_info(info_lines: List[str]) -> ParsedMatchInfo:
