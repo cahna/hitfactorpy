@@ -5,6 +5,7 @@
 .vscode/.ropeproject
 .tox
 .python-version
+dist/
 
 # Misc files
 *.out

@@ -13,11 +13,14 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v3
+      
+      - name: get repository name
+        run: echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
 
       - uses: actions/cache@v3
         with:
           path: ~/.cache/pre-commit
-          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          key: pre-commit-${{ env.REPOSITORY_NAME }}-${{ hashFiles('.pre-commit-config.yaml') }}
 
       - name: Set up the environment
         uses: ./.github/actions/setup-poetry-env
@@ -48,12 +51,15 @@ jobs:
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
+      
+      - name: get repository name
+        run: echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
 
       - name: Load cached venv
         uses: actions/cache@v3
         with:
           path: .tox
-          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+          key: venv-${{ env.REPOSITORY_NAME }}-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install tox
         run: |

@@ -6,4 +6,4 @@ Python tools for parsing and analyzing practical match reports.
 
 **Work in progress...**
 
-See [docs/linux-setup.md](docs/linux-setup.md) for developer notes.
+Documentation website: https:/cahna.github.io/hitfactorpy
