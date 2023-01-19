@@ -1,0 +1,29 @@
+name: docs-deploy
+on:
+  push:
+    branches:
+      - main
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install docs dependencies group
+        run: poetry install --no-interaction --with docs
+        shell: bash
+
+      - name: Check if documentation can be built
+        run: poetry run mkdocs build -s
+
+      - name: Build and dedploy docs site
+        run: poetry run mkdocs gh-deploy --force
