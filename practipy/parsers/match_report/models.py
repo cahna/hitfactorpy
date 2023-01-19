@@ -6,17 +6,6 @@ from ...enums import Classification, Division, MatchLevel, PowerFactor, Scoring
 
 
 @dataclass(frozen=True)
-class ParsedMatchLines:
-    info: List[str] = field(default_factory=list)
-    competitor_columns: List[str] = field(default_factory=list)
-    competitor: List[str] = field(default_factory=list)
-    stage_columns: List[str] = field(default_factory=list)
-    stage: List[str] = field(default_factory=list)
-    stage_score_columns: List[str] = field(default_factory=list)
-    stage_score: List[str] = field(default_factory=list)
-
-
-@dataclass(frozen=True)
 class ParsedCompetitor:
     internal_id: int
     member_number: Optional[str] = None

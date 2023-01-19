@@ -1,10 +1,22 @@
 import logging
+from dataclasses import dataclass, field
 from typing import List
 
 from ..constants import MatchReportSectionPrefix
-from ..models import ParsedMatchLines
 
 _logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class ParsedMatchLines:
+    info: List[str] = field(default_factory=list)
+    competitor_columns: List[str] = field(default_factory=list)
+    competitor: List[str] = field(default_factory=list)
+    stage_columns: List[str] = field(default_factory=list)
+    stage: List[str] = field(default_factory=list)
+    stage_score_columns: List[str] = field(default_factory=list)
+    stage_score: List[str] = field(default_factory=list)
+
 
 REPORT_LINE_PREFIX_INFO = f"{MatchReportSectionPrefix.INFO.value} "
 REPORT_LINE_PREFIX_COLUMNS_COMPETITORS = f"{MatchReportSectionPrefix.COMPETITOR_HEADER.value} "
