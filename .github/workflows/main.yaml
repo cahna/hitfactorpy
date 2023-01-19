@@ -16,6 +16,7 @@ jobs:
       
       - name: get repository name
         run: echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+        shell: bash
 
       - uses: actions/cache@v3
         with:
@@ -54,6 +55,7 @@ jobs:
       
       - name: get repository name
         run: echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+        shell: bash
 
       - name: Load cached venv
         uses: actions/cache@v3

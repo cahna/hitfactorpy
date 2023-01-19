@@ -22,6 +22,7 @@ runs:
 
     - name: get repository name
       run: echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+      shell: bash
 
     - name: Load cached venv
       id: cached-poetry-dependencies
