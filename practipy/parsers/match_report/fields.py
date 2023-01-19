@@ -57,8 +57,8 @@ def parse_division(s: str) -> Division:
             return Division.SINGLE_STACK
         case "rev" | "revo" | "revolver":
             return Division.REVOLVER
-        case _:
-            _logger.warning("unknown division %s", s)
+        case _ as unrecognized_value:
+            _logger.warning("unknown division: %s", unrecognized_value)
             return Division.UNKNOWN
 
 
@@ -78,7 +78,8 @@ def parse_classification(s: str) -> Classification:
             return Classification.D
         case "u" | "x":
             return Classification.U
-        case _:
+        case _ as unrecognized_value:
+            _logger.warning("unknown classification: %s", unrecognized_value)
             return Classification.UNKNOWN
 
 
@@ -88,7 +89,8 @@ def parse_power_factor(s: str) -> PowerFactor:
             return PowerFactor.MAJOR
         case "minor":
             return PowerFactor.MINOR
-        case _:
+        case _ as unrecognized_value:
+            _logger.warning("unknown power factor: %s", unrecognized_value)
             return PowerFactor.UNKNOWN
 
 
@@ -106,8 +108,8 @@ def parse_scoring(s: str):
             return Scoring.FIXED_TIME
         case "chrono":
             return Scoring.CHRONO
-        case _:
-            _logger.warning("unknown scoring: %s", s)
+        case _ as unrecognized_value:
+            _logger.warning("unknown scoring: %s", unrecognized_value)
             return Scoring.UNKNOWN
 
 
