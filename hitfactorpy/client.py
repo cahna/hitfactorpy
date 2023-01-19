@@ -1,10 +1,10 @@
 import httpx
 
-_PRACTIPY_CACHE_DIR = "../../.practipy_cache"
+_hitfactorpy_CACHE_DIR = "../../.hitfactorpy_cache"
 _test_match_id = "01e65294-8692-4adf-9897-29dc01a68360"
 
 
-def get_cached_report(cache_dir: str = _PRACTIPY_CACHE_DIR, match_id: str = _test_match_id):
+def get_cached_report(cache_dir: str = _hitfactorpy_CACHE_DIR, match_id: str = _test_match_id):
     with open(f"{cache_dir}/reports/match__{match_id}.txt", "r") as f:
         return f.read()
 

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "practipy"
+name = "hitfactorpy"
 version = "0.0.1"
 description = ""
 authors = ["Conor Heine <conor.heine@gmail.com>"]
@@ -73,7 +73,7 @@ exclude = '''
 [tool.isort]
 profile = "black"
 src_paths = ["tests"]
-known_first_party = ["practipy"]
+known_first_party = ["hitfactorpy"]
 multi_line_output = 3
 include_trailing_comma = true
 force_grid_wrap = 0
@@ -86,4 +86,4 @@ skip_empty = true
 
 [tool.coverage.run]
 branch = true
-source = ["practipy"]
+source = ["hitfactorpy"]

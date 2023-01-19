@@ -1,5 +1,5 @@
-site_name: practipy
-site_description: practipy
+site_name: hitfactorpy
+site_description: hitfactorpy
 site_url: https://localhost/
 
 theme:
@@ -10,11 +10,11 @@ theme:
   # logo: 'img/icon-white.svg'
   # favicon: 'img/favicon.png'
 
-repo_name: cahna/practipy
-repo_url: https://github.com/cahna/practipy
+repo_name: cahna/hitfactorpy
+repo_url: https://github.com/cahna/hitfactorpy
 
 nav:
-  - PractiPy: 'index.md'
+  - hitfactorpy: 'index.md'
   - Developer Guide:
       - Linux+Pyenv: linux-setup.md
 

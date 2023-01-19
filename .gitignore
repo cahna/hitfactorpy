@@ -4,6 +4,7 @@
 **/__pycache__
 .vscode/.ropeproject
 .tox
+.python-version
 
 # Misc files
 *.out
@@ -24,4 +25,4 @@ coverage.xml
 site/
 
 # Project-specific temp files
-.practipy_cache
+.hitfactorpy_cache

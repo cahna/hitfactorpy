@@ -3,7 +3,7 @@ repos:
    rev: v0.991
    hooks:
      - id: mypy
-       files: ^(practipy/|tests/)
+       files: ^(hitfactorpy/|tests/)
  - repo: local
    hooks:
      - id: black
@@ -11,14 +11,14 @@ repos:
        entry: black
        language: system
        types: [ python ]
-       files: ^(practipy/|tests/)
+       files: ^(hitfactorpy/|tests/)
 
      - id: isort
        name: isort
        entry: isort
        language: system
        types: [ python ]
-       include: ^(practipy/|tests/)
+       include: ^(hitfactorpy/|tests/)
        exclude: '.*/migrations/.*'
       
      - id: flake8
@@ -26,5 +26,5 @@ repos:
        entry: flake8
        language: system
        types: [ python ]
-       files: ^(practipy/|tests/)
+       files: ^(hitfactorpy/|tests/)
 

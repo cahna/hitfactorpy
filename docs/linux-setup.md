@@ -11,9 +11,9 @@
 
 ### Setup pyenv for project
 
-1. `pyenv virtualenv 3.10 practipy`: create a virtualenv named "practipy" using python v3.10
-2. `pyenv local practipy`: configure pyenv to use "practipy" for the current directory
-3. `pyenv activate practipy`: activate the virtualenv
+1. `pyenv virtualenv 3.10 hitfactorpy`: create a virtualenv named "hitfactorpy" using python v3.10
+2. `pyenv local hitfactorpy`: configure pyenv to use "hitfactorpy" for the current directory
+3. `pyenv activate hitfactorpy`: activate the virtualenv
 
 ### Configure poetry to recognize pyenv
 

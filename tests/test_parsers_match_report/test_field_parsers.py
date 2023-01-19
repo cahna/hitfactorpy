@@ -2,8 +2,8 @@ from datetime import datetime
 
 import pytest
 
-from practipy.enums import Division, MatchLevel
-from practipy.parsers.match_report import fields
+from hitfactorpy.enums import Division, MatchLevel
+from hitfactorpy.parsers.match_report import fields
 
 _levels = [i.name for i in MatchLevel]
 

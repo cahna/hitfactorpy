@@ -1,4 +1,4 @@
 def test_lib_version():
-    import practipy
+    import hitfactorpy
 
-    assert practipy.__version__
+    assert hitfactorpy.__version__

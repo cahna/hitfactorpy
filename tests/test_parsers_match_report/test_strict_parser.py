@@ -1,4 +1,4 @@
-from practipy.parsers.match_report.strict import parse_match_report
+from hitfactorpy.parsers.match_report.strict import parse_match_report
 
 from .mock_data import EXAMPLE_REPORT
 

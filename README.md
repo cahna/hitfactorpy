@@ -1,4 +1,4 @@
-# practipy
+# hitfactorpy
 
 Python tools for parsing and analyzing practical match reports.
 
