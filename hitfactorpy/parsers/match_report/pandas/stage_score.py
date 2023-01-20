@@ -1,12 +1,16 @@
+import logging
 from enum import Enum, unique
 from io import StringIO
 from typing import Any, Callable, List, Mapping
 
 import pandas as pd
 from pandas._typing import FilePath, ReadCsvBuffer
+from pandas.errors import EmptyDataError
 
 from ..fields import parse_boolean, parse_power_factor
 from ..models import ParsedStageScore
+
+_logger = logging.getLogger(__name__)
 
 
 @unique
@@ -61,7 +65,12 @@ def read_stage_scores_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | 
 
 def parse_stage_scores(stage_scores_csv: str) -> List[ParsedStageScore]:
     """Parse CSV text into ParsedStageScore objects. Uses pandas for parsing."""
-    df = read_stage_scores_csv(StringIO(stage_scores_csv))
+    try:
+        df = read_stage_scores_csv(StringIO(stage_scores_csv))
+    except EmptyDataError:
+        _logger.error("failed to parse stage_scores csv into dataframe")
+        return []
+
     stage_scores = [
         ParsedStageScore(
             stage_id=stage_id,

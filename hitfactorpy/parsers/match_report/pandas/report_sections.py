@@ -32,16 +32,15 @@ def parse_match_report_sections(response: str) -> ParsedMatchReportSections:
             except ValueError:
                 pass
 
-    competitor_columns = categorized_lines.get(MatchReportSectionPrefix.COMPETITOR_HEADER, [])
-    stage_columns = categorized_lines.get(MatchReportSectionPrefix.STAGE_HEADER, [])
-    stage_score_columns = categorized_lines.get(MatchReportSectionPrefix.STAGE_SCORE_HEADER, [])
-
-    if not competitor_columns:
-        _logger.error("failed to parse competitor columns")
-    if not stage_columns:
-        _logger.error("failed to parse stage columns")
-    if not stage_score_columns:
-        _logger.error("failed to parse stage_score columns")
+    if not (competitor_columns := categorized_lines.get(MatchReportSectionPrefix.COMPETITOR_HEADER)):
+        _logger.warning("failed to parse competitor columns section")
+        competitor_columns = [""]
+    if not (stage_columns := categorized_lines.get(MatchReportSectionPrefix.STAGE_HEADER)):
+        _logger.warning("failed to parse stage columns section")
+        stage_columns = [""]
+    if not (stage_score_columns := categorized_lines.get(MatchReportSectionPrefix.STAGE_SCORE_HEADER)):
+        _logger.warning("failed to parse stage_score columns section")
+        stage_score_columns = [""]
 
     return ParsedMatchReportSections(
         info="\n".join(categorized_lines.get(MatchReportSectionPrefix.INFO, [])),

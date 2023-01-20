@@ -1,12 +1,16 @@
+import logging
 from enum import Enum, unique
 from io import StringIO
 from typing import Any, Callable, List, Mapping
 
 import pandas as pd
 from pandas._typing import FilePath, ReadCsvBuffer
+from pandas.errors import EmptyDataError
 
 from ..fields import parse_boolean, parse_classification, parse_division, parse_member_number, parse_power_factor
 from ..models import ParsedCompetitor
+
+_logger = logging.getLogger(__name__)
 
 
 @unique
@@ -56,7 +60,12 @@ def read_competitors_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | R
 
 def parse_competitors(competitor_csv_text: str) -> List[ParsedCompetitor]:
     """Parse CSV text into ParsedCompetitor objects. Uses pandas for parsing."""
-    df = read_competitors_csv(StringIO(competitor_csv_text))
+    try:
+        df = read_competitors_csv(StringIO(competitor_csv_text))
+    except EmptyDataError:
+        _logger.error("failed to parse competitors csv into dataframe")
+        return []
+
     competitors = [
         ParsedCompetitor(
             internal_id=internal_id,
