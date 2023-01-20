@@ -28,10 +28,9 @@ MATCH_REPORT_DATE_FORMAT = "%m/%d/%Y"
 def parse_match_date(date_text: str) -> Optional[datetime]:
     try:
         parsed_date = datetime.strptime(date_text, MATCH_REPORT_DATE_FORMAT)
-        _logger.debug("match date found: %s", date_text)
         return parsed_date
     except (ValueError, TypeError):
-        _logger.warning("failed to parse match date: %s", date_text)
+        _logger.debug("failed to parse match date: %s", date_text)
         return None
 
 
@@ -58,7 +57,7 @@ def parse_division(s: str) -> Division:
         case "rev" | "revo" | "revolver":
             return Division.REVOLVER
         case _ as unrecognized_value:
-            _logger.warning("unknown division: %s", unrecognized_value)
+            _logger.debug("unknown division: %s", unrecognized_value)
             return Division.UNKNOWN
 
 
@@ -79,7 +78,7 @@ def parse_classification(s: str) -> Classification:
         case "u" | "x":
             return Classification.U
         case _ as unrecognized_value:
-            _logger.warning("unknown classification: %s", unrecognized_value)
+            _logger.debug("unknown classification: %s", unrecognized_value)
             return Classification.UNKNOWN
 
 
@@ -90,7 +89,7 @@ def parse_power_factor(s: str) -> PowerFactor:
         case "minor":
             return PowerFactor.MINOR
         case _ as unrecognized_value:
-            _logger.warning("unknown power factor: %s", unrecognized_value)
+            _logger.debug("unknown power factor: %s", unrecognized_value)
             return PowerFactor.UNKNOWN
 
 
@@ -109,7 +108,7 @@ def parse_scoring(s: str):
         case "chrono":
             return Scoring.CHRONO
         case _ as unrecognized_value:
-            _logger.warning("unknown scoring: %s", unrecognized_value)
+            _logger.debug("unknown scoring: %s", unrecognized_value)
             return Scoring.UNKNOWN
 
 

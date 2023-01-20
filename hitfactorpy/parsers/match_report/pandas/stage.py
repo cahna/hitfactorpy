@@ -57,13 +57,17 @@ def parse_stages(stage_csv_text: str) -> List[ParsedStage]:
             scoring_type=scoring,
             min_rounds=min_rounds,
             max_points=max_points,
+            classifier=classifier,
+            classifier_number=classifier_number,
         )
-        for internal_id, stage_name, scoring, min_rounds, max_points in zip(
+        for internal_id, stage_name, scoring, min_rounds, max_points, classifier, classifier_number in zip(
             df.index,
             df[StageColumnName.STAGE_NAME],
             df[StageColumnName.SCORING],
             df[StageColumnName.MIN_ROUNDS],
             df[StageColumnName.MAX_POINTS],
+            df[StageColumnName.CLASSIFIER],
+            df[StageColumnName.CLASSIFIER_NUM],
         )
     ]
     # TODO: how to handle this edge case?
