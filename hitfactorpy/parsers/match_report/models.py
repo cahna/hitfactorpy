@@ -57,6 +57,8 @@ class ParsedStageScore:
     t4: float = 0.0
     t5: float = 0.0
     time: float = 0.0
+    dq: bool = False
+    dnf: bool = False
 
 
 @dataclass(frozen=True)

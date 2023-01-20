@@ -93,6 +93,8 @@ def parse_stage_scores(stage_scores_csv: str) -> List[ParsedStageScore]:
             t4=t4,
             t5=t5,
             time=time,
+            dq=dq,
+            dnf=dnf,
         )
         for (
             stage_id,
@@ -115,6 +117,8 @@ def parse_stage_scores(stage_scores_csv: str) -> List[ParsedStageScore]:
             t4,
             t5,
             time,
+            dq,
+            dnf,
         ) in zip(
             df[StageScoreColumnName.STAGE_ID],
             df[StageScoreColumnName.COMPETITOR_ID],
@@ -136,6 +140,8 @@ def parse_stage_scores(stage_scores_csv: str) -> List[ParsedStageScore]:
             df[StageScoreColumnName.T4],
             df[StageScoreColumnName.T5],
             df[StageScoreColumnName.TIME],
+            df[StageScoreColumnName.DQ],
+            df[StageScoreColumnName.DNF],
         )
     ]
     return stage_scores
