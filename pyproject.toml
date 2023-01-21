@@ -14,6 +14,9 @@ classifiers = [
     "Programming Language :: Python :: 3.10"
 ]
 
+[tool.poetry.scripts]
+hitfactorpy = 'hitfactorpy.cli:cli'
+
 [tool.poetry.dependencies]
 python = "^3.10,<3.12"
 typer = {version = "^0.7.0", extras = ["all"]}
