@@ -3,6 +3,7 @@ from enum import Enum, unique
 from typing import List, Optional
 
 from ...csv_utils import parse_csv_row, parse_float_value, parse_int_value
+from ..fields import parse_boolean
 from ..models import ParsedStageScore
 
 _logger = logging.getLogger(__name__)
@@ -14,6 +15,8 @@ class StageScoreColumn(int, Enum):
 
     STAGE_ID = 1
     SHOOTER_ID = 2
+    DQ = 3
+    DNF = 4
     A = 5
     B = 6
     C = 7
@@ -80,6 +83,9 @@ def parse_match_report_stage_score_lines(
             t4=parse_float_value(row[StageScoreColumn.T4].strip()) or 0.0,
             t5=parse_float_value(row[StageScoreColumn.T5].strip()) or 0.0,
             time=parse_float_value(row[StageScoreColumn.TIME].strip()) or 0.0,
+            # Boolean attributes
+            dq=parse_boolean(row[StageScoreColumn.DQ].strip()),
+            dnf=parse_boolean(row[StageScoreColumn.DNF].strip()),
         )
         stages.append(stage)
     return stages

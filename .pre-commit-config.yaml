@@ -4,6 +4,8 @@ repos:
    hooks:
      - id: mypy
        files: ^(hitfactorpy/|tests/)
+       additional_dependencies:
+        - "pydantic>=1.10.4"
  - repo: local
    hooks:
      - id: black

@@ -8,12 +8,9 @@ from typer.testing import CliRunner
 @pytest.fixture
 def cli_entrypoint() -> Typer:
     """See: https://typer.tiangolo.com/tutorial/testing/#test-a-function"""
-    from hitfactorpy.cli import entrypoint
+    from hitfactorpy.cli import cli
 
-    app = Typer()
-    app.command(name="todo")(entrypoint)
-
-    return app
+    return cli
 
 
 @pytest.fixture

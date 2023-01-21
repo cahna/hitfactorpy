@@ -1,6 +1,7 @@
-from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional
+
+from pydantic.dataclasses import dataclass
 
 from ...enums import Classification, Division, MatchLevel, PowerFactor, Scoring
 
@@ -16,8 +17,8 @@ class ParsedCompetitor:
     division: Optional[Division] = None
     classification: Optional[Classification] = None
     power_factor: Optional[PowerFactor] = None
-    dq: bool = field(default_factory=lambda: False)
-    reentry: bool = field(default_factory=lambda: False)
+    dq: bool = False
+    reentry: bool = False
 
 
 @dataclass(frozen=True)
@@ -28,7 +29,7 @@ class ParsedStage:
     name: Optional[str] = None
     min_rounds: Optional[int] = 0
     max_points: Optional[int] = 0
-    classifier: bool = field(default_factory=lambda: False)
+    classifier: bool = False
     classifier_number: Optional[str] = None
     scoring_type: Scoring = Scoring.COMSTOCK
 
@@ -57,6 +58,8 @@ class ParsedStageScore:
     t4: float = 0.0
     t5: float = 0.0
     time: float = 0.0
+    dq: bool = False
+    dnf: bool = False
 
 
 @dataclass(frozen=True)

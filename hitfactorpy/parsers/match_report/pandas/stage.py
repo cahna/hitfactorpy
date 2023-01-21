@@ -1,12 +1,16 @@
+import logging
 from enum import Enum, unique
 from io import StringIO
 from typing import Any, Callable, List, Mapping
 
 import pandas as pd
 from pandas._typing import FilePath, ReadCsvBuffer
+from pandas.errors import EmptyDataError
 
 from ..fields import parse_boolean, parse_scoring
 from ..models import ParsedStage
+
+_logger = logging.getLogger(__name__)
 
 
 @unique
@@ -40,7 +44,12 @@ def read_stages_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | ReadCs
 
 def parse_stages(stage_csv_text: str) -> List[ParsedStage]:
     """Parse CSV text into ParsedStage objects. Uses pandas for parsing."""
-    df = read_stages_csv(StringIO(stage_csv_text))
+    try:
+        df = read_stages_csv(StringIO(stage_csv_text))
+    except EmptyDataError:
+        _logger.error("failed to parse stages csv into dataframe")
+        return []
+
     stages = [
         ParsedStage(
             internal_id=internal_id,
@@ -48,13 +57,17 @@ def parse_stages(stage_csv_text: str) -> List[ParsedStage]:
             scoring_type=scoring,
             min_rounds=min_rounds,
             max_points=max_points,
+            classifier=classifier,
+            classifier_number=classifier_number,
         )
-        for internal_id, stage_name, scoring, min_rounds, max_points in zip(
+        for internal_id, stage_name, scoring, min_rounds, max_points, classifier, classifier_number in zip(
             df.index,
             df[StageColumnName.STAGE_NAME],
             df[StageColumnName.SCORING],
             df[StageColumnName.MIN_ROUNDS],
             df[StageColumnName.MAX_POINTS],
+            df[StageColumnName.CLASSIFIER],
+            df[StageColumnName.CLASSIFIER_NUM],
         )
     ]
     # TODO: how to handle this edge case?
