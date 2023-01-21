@@ -10,9 +10,9 @@ from .models import ParsedMatchInfo
 _logger = logging.getLogger(__name__)
 
 
-MATCH_REPORT_PREFIX_NAME = f"{MatchReportInfoSectionFields.MATCH_NAME}:"
-MATCH_REPORT_PREFIX_DATE = f"{MatchReportInfoSectionFields.MATCH_DATE}:"
-MATCH_REPORT_PREFIX_LEVEL = f"{MatchReportInfoSectionFields.MATCH_LEVEL}:"
+MATCH_REPORT_PREFIX_NAME = f"{MatchReportInfoSectionFields.MATCH_NAME.value}:"
+MATCH_REPORT_PREFIX_DATE = f"{MatchReportInfoSectionFields.MATCH_DATE.value}:"
+MATCH_REPORT_PREFIX_LEVEL = f"{MatchReportInfoSectionFields.MATCH_LEVEL.value}:"
 
 
 def parse_match_info(info_lines: List[str]) -> ParsedMatchInfo:

@@ -1,6 +1,7 @@
 import json
 from enum import Enum, unique
 from pathlib import Path
+from typing import Any, NamedTuple, Optional
 
 import typer
 from pydantic import schema_json_of
@@ -19,10 +20,10 @@ class MatchParserOption(str, Enum):
 
 @cli.command()
 def parse_match(
-    match_report_file: Path, json_indent: int | None = None, parser: MatchParserOption = MatchParserOption.PANDAS
+    match_report_file: Path, json_indent: Optional[int] = None, parser: MatchParserOption = MatchParserOption.PANDAS
 ):
     """
-    Parse a match report file
+    Parse a match report file into JSON
     """
     if parser == MatchParserOption.PANDAS:
         from hitfactorpy.parsers.match_report.pandas import parse_match_report
@@ -39,19 +40,33 @@ def parse_match(
 @unique
 class JsonSchemaModelArgument(str, Enum):
     MATCH_REPORT = "match"
+    COMPETITOR = "competitor"
+    STAGE = "stage"
+    STAGE_SCORE = "stage-score"
 
 
 @cli.command()
-def json_schema(
-    model: JsonSchemaModelArgument = JsonSchemaModelArgument.MATCH_REPORT, title: str = "MatchReport Schema"
-):
+def json_schema(model: JsonSchemaModelArgument = JsonSchemaModelArgument.MATCH_REPORT, title: Optional[str] = None):
     """
     Dump the JSON Schema for a model
     """
-    if model == JsonSchemaModelArgument.MATCH_REPORT:
-        from hitfactorpy.parsers.match_report.models import ParsedMatchReport
+    from hitfactorpy.parsers.match_report import models
 
-        typer.echo(schema_json_of(ParsedMatchReport, title=title))
+    class ModelConfig(NamedTuple):
+        """A model and its default title"""
+
+        model: Any
+        title: str
+
+    models_config = {
+        JsonSchemaModelArgument.MATCH_REPORT: ModelConfig(models.ParsedMatchReport, "MatchReport Schema"),
+        JsonSchemaModelArgument.COMPETITOR: ModelConfig(models.ParsedCompetitor, "Competitor Schema"),
+        JsonSchemaModelArgument.STAGE: ModelConfig(models.ParsedStage, "Stage schema"),
+        JsonSchemaModelArgument.STAGE_SCORE: ModelConfig(models.ParsedStageScore, "StageScore Schema"),
+    }
+    config = models_config[model]
+
+    typer.echo(schema_json_of(config.model, title=title or config.title))
 
 
 if __name__ == "__main__":
