@@ -15,6 +15,7 @@ repo_url: https://github.com/cahna/hitfactorpy
 
 nav:
   - Introduction: 'index.md'
+  - CLI: 'cli.md'
   - Developer Guide:
       - Linux+Pyenv: linux-setup.md
 
