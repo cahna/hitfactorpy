@@ -117,6 +117,20 @@ def test_parse_power_factor(test_input, expected):
 @pytest.mark.parametrize(
     "test_input,expected",
     [
+        ("mAjOr", PowerFactor.MAJOR),
+        ("minor", PowerFactor.MINOR),
+        ("", None),
+        (None, None),
+        ("y", None),
+    ],
+)
+def test_parse_power_factor_default_none(test_input, expected):
+    assert fields.parse_power_factor_default_none(test_input) == expected
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
         ("TY123321", "TY123321"),
         ("A-1", "A1"),
         ("L1771no", "L1771NO"),

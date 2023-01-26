@@ -38,8 +38,10 @@ class ParsedStage:
 class ParsedStageScore:
     """Stage score parsed from match report"""
 
-    competitor_id: Optional[int] = None
     stage_id: Optional[int] = None
+    competitor_id: Optional[int] = None
+    dq: bool = False
+    dnf: bool = False
     a: int = 0
     b: int = 0
     c: int = 0
@@ -58,8 +60,13 @@ class ParsedStageScore:
     t4: float = 0.0
     t5: float = 0.0
     time: float = 0.0
-    dq: bool = False
-    dnf: bool = False
+    raw_points: Optional[float] = None
+    penalty_points: Optional[float] = None
+    total_points: Optional[float] = None
+    hit_factor: Optional[float] = None
+    stage_points: Optional[float] = None
+    stage_place: Optional[int] = None
+    stage_power_factor: Optional[PowerFactor] = None
 
 
 @dataclass(frozen=True)

@@ -71,8 +71,15 @@ def assert_example_match_report(report: ParsedMatchReport):
     assert report.stage_scores[0].t4 == approx(0)
     assert report.stage_scores[0].t5 == approx(0)
     assert report.stage_scores[0].time == approx(17.34)
+    assert report.stage_scores[0].raw_points == approx(150.0)
+    assert report.stage_scores[0].penalty_points == approx(0)
+    assert report.stage_scores[0].total_points == approx(150.0)
+    assert report.stage_scores[0].hit_factor == approx(8.6505)
+    assert report.stage_scores[0].stage_points == approx(160.0)
+    assert report.stage_scores[0].stage_place == 1
     assert report.stage_scores[0].dq is False
     assert report.stage_scores[0].dnf is False
+    assert report.stage_scores[0].stage_power_factor is None
 
     # Verify a stage score with a DQ
     assert report.stage_scores[37].dq is True
