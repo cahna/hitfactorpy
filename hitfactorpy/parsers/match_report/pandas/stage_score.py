@@ -7,7 +7,7 @@ import pandas as pd
 from pandas._typing import FilePath, ReadCsvBuffer
 from pandas.errors import EmptyDataError
 
-from ..fields import parse_boolean, parse_power_factor
+from ..fields import parse_boolean, parse_power_factor_default_none
 from ..models import ParsedStageScore
 
 _logger = logging.getLogger(__name__)
@@ -28,6 +28,8 @@ class StageScoreColumnName(str, Enum):
     M = "Miss"
     NS = "No Shoot"
     PROC = "Procedural"
+    DOUBLE_POPPERS = "Double Poppers"
+    DOUBLE_POPPER_MISS = "Double Popper Miss"
     LATE_SHOT = "Late Shot"
     EXTRA_SHOT = "Extra Shot"
     EXTRA_HIT = "Extra Hit"
@@ -42,13 +44,16 @@ class StageScoreColumnName(str, Enum):
     TIME = "Time"
     RAW_POINTS = "Raw Points"
     TOTAL_POINTS = "Total Points"
+    HIT_FACTOR = "Hit Factor"
+    STAGE_POINTS = "Stage Points"
+    STAGE_PLACE = "Stage Place"
     STAGE_POWER_FACTOR = "Stage Power Factor"
 
 
 CSV_CONVERTERS: Mapping[str, Callable[[str], Any]] = {
     StageScoreColumnName.DQ: parse_boolean,
     StageScoreColumnName.DNF: parse_boolean,
-    StageScoreColumnName.STAGE_POWER_FACTOR: parse_power_factor,
+    StageScoreColumnName.STAGE_POWER_FACTOR: parse_power_factor_default_none,
 }
 
 
@@ -59,7 +64,6 @@ def read_stage_scores_csv(filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | 
         index_col=None,
         converters=CSV_CONVERTERS,
     )
-    # df['hit_factor'] = (df['A'] * 5) # TODO
     return df
 
 
@@ -75,6 +79,8 @@ def parse_stage_scores(stage_scores_csv: str) -> List[ParsedStageScore]:
         ParsedStageScore(
             stage_id=stage_id,
             competitor_id=competitor_id,
+            dq=dq,
+            dnf=dnf,
             a=a,
             b=b,
             c=c,
@@ -93,12 +99,19 @@ def parse_stage_scores(stage_scores_csv: str) -> List[ParsedStageScore]:
             t4=t4,
             t5=t5,
             time=time,
-            dq=dq,
-            dnf=dnf,
+            raw_points=raw_points,
+            penalty_points=penalty_points,
+            total_points=total_points,
+            hit_factor=hit_factor,
+            stage_points=stage_points,
+            stage_place=stage_place,
+            stage_power_factor=stage_power_factor,
         )
         for (
             stage_id,
             competitor_id,
+            dq,
+            dnf,
             a,
             b,
             c,
@@ -117,11 +130,18 @@ def parse_stage_scores(stage_scores_csv: str) -> List[ParsedStageScore]:
             t4,
             t5,
             time,
-            dq,
-            dnf,
+            raw_points,
+            penalty_points,
+            total_points,
+            hit_factor,
+            stage_points,
+            stage_place,
+            stage_power_factor,
         ) in zip(
             df[StageScoreColumnName.STAGE_ID],
             df[StageScoreColumnName.COMPETITOR_ID],
+            df[StageScoreColumnName.DQ],
+            df[StageScoreColumnName.DNF],
             df[StageScoreColumnName.A],
             df[StageScoreColumnName.B],
             df[StageScoreColumnName.C],
@@ -140,8 +160,13 @@ def parse_stage_scores(stage_scores_csv: str) -> List[ParsedStageScore]:
             df[StageScoreColumnName.T4],
             df[StageScoreColumnName.T5],
             df[StageScoreColumnName.TIME],
-            df[StageScoreColumnName.DQ],
-            df[StageScoreColumnName.DNF],
+            df[StageScoreColumnName.RAW_POINTS],
+            df[StageScoreColumnName.PENALTY_POINTS],
+            df[StageScoreColumnName.TOTAL_POINTS],
+            df[StageScoreColumnName.HIT_FACTOR],
+            df[StageScoreColumnName.STAGE_POINTS],
+            df[StageScoreColumnName.STAGE_PLACE],
+            df[StageScoreColumnName.STAGE_POWER_FACTOR],
         )
     ]
     return stage_scores

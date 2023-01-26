@@ -2,8 +2,9 @@ import logging
 from enum import Enum, unique
 from typing import List, Optional
 
+from ....enums import PowerFactor
 from ...csv_utils import parse_csv_row, parse_float_value, parse_int_value
-from ..fields import parse_boolean
+from ..fields import parse_boolean, parse_power_factor, parse_power_factor_default_none
 from ..models import ParsedStageScore
 
 _logger = logging.getLogger(__name__)
@@ -24,6 +25,8 @@ class StageScoreColumn(int, Enum):
     M = 9
     NS = 10
     PROC = 11
+    DOUBLE_POPPERS = 12
+    DOUBLE_POPPER_MISS = 13
     LATE_SHOT = 14
     EXTRA_SHOT = 15
     EXTRA_HIT = 16
@@ -38,6 +41,10 @@ class StageScoreColumn(int, Enum):
     TIME = 25
     RAW_POINTS = 26
     TOTAL_POINTS = 27
+    HIT_FACTOR = 28
+    STAGE_POINTS = 29
+    STAGE_PLACE = 30
+    STAGE_POWER_FACTOR = 31
 
 
 def check_stage_score_columns(parsed_columns: List[str], fail_on_mismatch=False):
@@ -61,9 +68,10 @@ def parse_match_report_stage_score_lines(
     for line in stage_lines:
         row = parse_csv_row(line)
         stage = ParsedStageScore(
-            # Integer attributes
             stage_id=parse_int_value(row[StageScoreColumn.STAGE_ID].strip()),
             competitor_id=parse_int_value(row[StageScoreColumn.SHOOTER_ID].strip()),
+            dq=parse_boolean(row[StageScoreColumn.DQ].strip()),
+            dnf=parse_boolean(row[StageScoreColumn.DNF].strip()),
             a=parse_int_value(row[StageScoreColumn.A].strip()) or 0,
             b=parse_int_value(row[StageScoreColumn.B].strip()) or 0,
             c=parse_int_value(row[StageScoreColumn.C].strip()) or 0,
@@ -76,16 +84,19 @@ def parse_match_report_stage_score_lines(
             extra_shot=parse_int_value(row[StageScoreColumn.EXTRA_SHOT].strip()) or 0,
             extra_hit=parse_int_value(row[StageScoreColumn.EXTRA_HIT].strip()) or 0,
             other_penalty=parse_int_value(row[StageScoreColumn.OTHER_PENALTY].strip()) or 0,
-            # Float attributes
             t1=parse_float_value(row[StageScoreColumn.T1].strip()) or 0.0,
             t2=parse_float_value(row[StageScoreColumn.T2].strip()) or 0.0,
             t3=parse_float_value(row[StageScoreColumn.T3].strip()) or 0.0,
             t4=parse_float_value(row[StageScoreColumn.T4].strip()) or 0.0,
             t5=parse_float_value(row[StageScoreColumn.T5].strip()) or 0.0,
             time=parse_float_value(row[StageScoreColumn.TIME].strip()) or 0.0,
-            # Boolean attributes
-            dq=parse_boolean(row[StageScoreColumn.DQ].strip()),
-            dnf=parse_boolean(row[StageScoreColumn.DNF].strip()),
+            raw_points=parse_float_value(row[StageScoreColumn.RAW_POINTS].strip()),
+            penalty_points=parse_float_value(row[StageScoreColumn.PENALTY_POINTS].strip()),
+            total_points=parse_float_value(row[StageScoreColumn.TOTAL_POINTS].strip()),
+            hit_factor=parse_float_value(row[StageScoreColumn.HIT_FACTOR].strip()),
+            stage_points=parse_float_value(row[StageScoreColumn.STAGE_POINTS].strip()),
+            stage_place=parse_int_value(row[StageScoreColumn.STAGE_PLACE].strip()),
+            stage_power_factor=parse_power_factor_default_none(row[StageScoreColumn.STAGE_POWER_FACTOR].strip()),
         )
         stages.append(stage)
     return stages

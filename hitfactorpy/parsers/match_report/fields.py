@@ -93,6 +93,13 @@ def parse_power_factor(s: str) -> PowerFactor:
             return PowerFactor.UNKNOWN
 
 
+def parse_power_factor_default_none(s: str | None) -> PowerFactor | None:
+    if s and (parsed_power_factor := parse_power_factor(s)):
+        if parsed_power_factor and parsed_power_factor != PowerFactor.UNKNOWN:
+            return parsed_power_factor
+    return None
+
+
 def parse_member_number(s: str):
     return re.sub(r"[^0-9A-Z]", "", _sanitize_string(s).upper())
 
