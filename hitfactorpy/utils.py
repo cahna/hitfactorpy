@@ -7,6 +7,7 @@ from .enums import PowerFactor, PowerFactorLiteral, Scoring, ScoringLiteral
 class StageScore(Protocol):
     class _Competitor(Protocol):
         power_factor: PowerFactor | PowerFactorLiteral
+        dq: bool | None
 
     class _Stage(Protocol):
         scoring_type: Scoring | ScoringLiteral
@@ -40,7 +41,9 @@ def calculate_uspsa_hit_factor(stage_score: StageScore | StageScoreWithStagePowe
         else max(
             0.0,
             0.0
-            if getattr(stage_score, "dq", False) or getattr(stage_score, "dnf", False)
+            if getattr(stage_score, "dq", False)
+            or getattr(stage_score, "dnf", False)
+            or getattr(stage_score.competitor, "dq", False)
             else (
                 stage_score.a * 5
                 + (
@@ -69,6 +72,6 @@ def calculate_uspsa_hit_factor(stage_score: StageScore | StageScoreWithStagePowe
                 + (getattr(stage_score, "extra_shot", 0) * -10)
                 + (getattr(stage_score, "extra_hit", 0) * -10)
             )
-            / (stage_score.time or 1),
+            / (getattr(stage_score, "time", None) or 1),
         )
     ).quantize(decimal.Decimal(".0001"))

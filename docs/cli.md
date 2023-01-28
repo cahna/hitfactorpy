@@ -14,7 +14,7 @@ $ python -m hitfactorpy --help
 
 ## Command: `parse-match`
 
-Parse a match report into JSON.
+Convert a match report into JSON.
 
 ```console
 $ hitfactorpy parse-match ./report.txt --json-indent 2
