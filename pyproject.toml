@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hitfactorpy"
-version = "0.0.6"
+version = "0.0.7"
 description = "Python tools for parsing and analyzing practical match reports"
 authors = ["Conor Heine <conor.heine@gmail.com>"]
 readme = "README.md"

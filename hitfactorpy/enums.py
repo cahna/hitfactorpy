@@ -1,4 +1,5 @@
 from enum import Enum, unique
+from typing import Literal
 
 
 @unique
@@ -8,6 +9,9 @@ class Scoring(str, Enum):
     FIXED_TIME = "fixedTime"
     CHRONO = "chrono"
     UNKNOWN = "unknown"
+
+
+ScoringLiteral = Literal["comstock", "virginia", "fixedTime", "chrono", "unknown"]
 
 
 @unique
@@ -36,6 +40,9 @@ class PowerFactor(str, Enum):
     Unknown (missing data or parsing failed)
     """
     UNKNOWN = "unknown"
+
+
+PowerFactorLiteral = Literal["major", "minor", "unknown"]
 
 
 @unique
