@@ -152,6 +152,20 @@ def test_calculate_uspsa_hit_factor_chrono(test_input, expected):
             ),
             decimal.Decimal("5.1491").quantize(e4),
         ),
+        (
+            SimpleNamespace(
+                stage=SimpleNamespace(scoring_type=Scoring.COMSTOCK),
+                competitor=SimpleNamespace(power_factor=PowerFactor.MINOR),
+                a=18,
+                c=3,
+                d=0,
+                m=1,
+                ns=0,
+                procedural=0,
+                time=decimal.Decimal("26.81"),
+            ),
+            decimal.Decimal("3.3197").quantize(e4),
+        ),
     ],
 )
 def test_calculate_uspsa_hit_factor_comstock(test_input, expected):
