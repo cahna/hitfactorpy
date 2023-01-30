@@ -4,68 +4,45 @@ from typing import Protocol
 from .enums import PowerFactor, PowerFactorLiteral, Scoring, ScoringLiteral
 
 
-class StageScore(Protocol):
-    class _Competitor(Protocol):
-        power_factor: PowerFactor | PowerFactorLiteral
-        dq: bool | None
-
-    class _Stage(Protocol):
-        scoring_type: Scoring | ScoringLiteral
-
-    stage: _Stage
-    competitor: _Competitor
+class IUspsaStageScore(Protocol):
+    scoring_type: Scoring | ScoringLiteral | None
+    power_factor: PowerFactor | PowerFactorLiteral | None
     dq: bool | None
     dnf: bool | None
-    a: int
-    c: int
-    d: int
-    m: int
-    ns: int
-    procedural: int
-    other_penalty: int
-    late_shot: int
-    extra_shot: int
-    extra_hit: int
-    time: float | decimal.Decimal
-    hit_factor: float | decimal.Decimal | str  # If stage is chrono, this is required
+    a: int | None
+    c: int | None
+    d: int | None
+    m: int | None
+    ns: int | None
+    procedural: int | None
+    other_penalty: int | None
+    late_shot: int | None
+    extra_shot: int | None
+    extra_hit: int | None
+    time: float | decimal.Decimal | None
+    hit_factor: float | decimal.Decimal | str | None  # If stage is chrono, this is required
 
 
-class StageScoreWithStagePowerFactor(StageScore):
-    stage_power_factor: PowerFactor | PowerFactorLiteral | None
-
-
-def calculate_uspsa_hit_factor(stage_score: StageScore | StageScoreWithStagePowerFactor) -> decimal.Decimal:
+def calculate_uspsa_hit_factor(stage_score: IUspsaStageScore) -> decimal.Decimal:
     return decimal.Decimal(
-        stage_score.hit_factor
-        if stage_score.stage.scoring_type == Scoring.CHRONO
+        getattr(stage_score, "hit_factor", 0)
+        if getattr(stage_score, "scoring_type", Scoring.COMSTOCK) == Scoring.CHRONO
         else max(
             0.0,
             0.0
-            if getattr(stage_score, "dq", False)
-            or getattr(stage_score, "dnf", False)
-            or getattr(stage_score.competitor, "dq", False)
+            if getattr(stage_score, "dq", False) or getattr(stage_score, "dnf", False)
             else (
-                stage_score.a * 5
+                getattr(stage_score, "a", 0) * 5
                 + (
-                    stage_score.c
-                    * (
-                        4
-                        if getattr(stage_score, "stage_power_factor", stage_score.competitor.power_factor)
-                        == PowerFactor.MAJOR
-                        else 3
-                    )
+                    getattr(stage_score, "c", 0)
+                    * (4 if getattr(stage_score, "power_factor", PowerFactor.MINOR) == PowerFactor.MAJOR else 3)
                 )
                 + (
-                    stage_score.d
-                    * (
-                        2
-                        if getattr(stage_score, "stage_power_factor", stage_score.competitor.power_factor)
-                        == PowerFactor.MAJOR
-                        else 1
-                    )
+                    getattr(stage_score, "d", 0)
+                    * (2 if getattr(stage_score, "power_factor", PowerFactor.MINOR) == PowerFactor.MAJOR else 1)
                 )
-                + (stage_score.m * -10)
-                + (stage_score.ns * -10)
+                + (getattr(stage_score, "m", 0) * -10)
+                + (getattr(stage_score, "ns", 0) * -10)
                 + (getattr(stage_score, "procedural", 0) * -10)
                 + (getattr(stage_score, "other_penalty", 0) * -1)
                 + (getattr(stage_score, "late_shot", 0) * -5)
