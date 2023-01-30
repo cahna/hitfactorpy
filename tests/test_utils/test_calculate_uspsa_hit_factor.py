@@ -2,8 +2,10 @@ import decimal
 from types import SimpleNamespace
 
 import pytest
+from pydantic import parse_obj_as
 
 from hitfactorpy.enums import PowerFactor, Scoring
+from hitfactorpy.pydantic_.models import UspsaStageScore
 from hitfactorpy.utils import calculate_uspsa_hit_factor
 
 e4 = decimal.Decimal("0.0001")
@@ -46,6 +48,7 @@ ZERO_HF = decimal.Decimal().quantize(e4)
 )
 def test_calculate_uspsa_hit_factor_chrono(test_input, expected):
     assert calculate_uspsa_hit_factor(test_input) == expected
+    assert UspsaStageScore.from_orm(test_input).calculate_hit_factor() == expected
 
 
 @pytest.mark.parametrize(

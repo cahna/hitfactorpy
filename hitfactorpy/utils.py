@@ -1,30 +1,77 @@
 import decimal
 from typing import Protocol
 
-from .enums import PowerFactor, PowerFactorLiteral, Scoring, ScoringLiteral
+from .decimal_ import D4
+from .enums import PowerFactor, Scoring
+
+
+def get_hf(
+    scoring_type: Scoring = Scoring.COMSTOCK,
+    power_factor: PowerFactor = PowerFactor.MINOR,
+    dq: bool = False,
+    dnf: bool = False,
+    a: int = 0,
+    c: int = 0,
+    d: int = 0,
+    m: int = 0,
+    ns: int = 0,
+    procedural: int = 0,
+    other_penalty: int = 0,
+    late_shot: int = 0,
+    extra_shot: int = 0,
+    extra_hit: int = 0,
+    time: float | decimal.Decimal = 0.0,
+    hit_factor: float | decimal.Decimal | str = 0.0,
+) -> decimal.Decimal:
+    return D4(
+        hit_factor
+        if scoring_type in [Scoring.CHRONO, Scoring.CHRONO.value]
+        else max(
+            (
+                0.0,
+                0.0
+                if dq or dnf
+                else (
+                    (
+                        (a * 5)
+                        + (c * (4 if power_factor in [PowerFactor.MAJOR, PowerFactor.MAJOR.value] else 3))
+                        + (d * (2 if power_factor in [PowerFactor.MAJOR, PowerFactor.MAJOR.value] else 1))
+                        + (m * -10)
+                        + (ns * -10)
+                        + (procedural * -10)
+                        + (other_penalty * -1)
+                        + (late_shot * -5)
+                        + (extra_shot * -10)
+                        + (extra_hit * -10)
+                    )
+                    / (time or 1)
+                ),
+            )
+        )
+    )
 
 
 class IUspsaStageScore(Protocol):
-    scoring_type: Scoring | ScoringLiteral | None
-    power_factor: PowerFactor | PowerFactorLiteral | None
-    dq: bool | None
-    dnf: bool | None
-    a: int | None
-    c: int | None
-    d: int | None
-    m: int | None
-    ns: int | None
-    procedural: int | None
-    other_penalty: int | None
-    late_shot: int | None
-    extra_shot: int | None
-    extra_hit: int | None
-    time: float | decimal.Decimal | None
-    hit_factor: float | decimal.Decimal | str | None  # If stage is chrono, this is required
+    scoring_type: Scoring = Scoring.COMSTOCK
+    power_factor: PowerFactor = PowerFactor.MINOR
+    dq: bool = False
+    dnf: bool = False
+    a: int = 0
+    c: int = 0
+    d: int = 0
+    m: int = 0
+    ns: int = 0
+    procedural: int = 0
+    other_penalty: int = 0
+    late_shot: int = 0
+    extra_shot: int = 0
+    extra_hit: int = 0
+    time: float | decimal.Decimal = 0.0
+    hit_factor: float | decimal.Decimal | str = 0.0  # If stage is chrono, this is required
 
 
 def calculate_uspsa_hit_factor(stage_score: IUspsaStageScore) -> decimal.Decimal:
-    return decimal.Decimal(
+    return D4(
         getattr(stage_score, "hit_factor", 0)
         if getattr(stage_score, "scoring_type", Scoring.COMSTOCK) == Scoring.CHRONO
         else max(
@@ -51,4 +98,4 @@ def calculate_uspsa_hit_factor(stage_score: IUspsaStageScore) -> decimal.Decimal
             )
             / (getattr(stage_score, "time", None) or 1),
         )
-    ).quantize(decimal.Decimal(".0001"))
+    )
