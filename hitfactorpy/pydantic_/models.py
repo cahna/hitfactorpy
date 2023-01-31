@@ -40,11 +40,10 @@ class UspsaStageScore(BaseModel):
     @root_validator(pre=True)
     def _coerce_hit_factor_to_decimal_or_calculate_if_unset(cls, values):
         hit_factor = values.get("hit_factor")
-        if hit_factor is None:
-            values["hit_factor"] = calculate_hit_factor(**values)
-        else:
-            values["hit_factor"] = D4(hit_factor)
-        return values
+        return {
+            **values,
+            "hit_factor": calculate_hit_factor(**values) if hit_factor is None else D4(hit_factor),
+        }
 
     @root_validator
     def _check_hit_factor_matches_calculated_hit_factor(cls, values):
