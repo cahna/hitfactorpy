@@ -1,20 +1,14 @@
 import decimal
 from types import SimpleNamespace
 
-import pytest
-from pydantic import parse_obj_as
-
 from hitfactorpy.enums import PowerFactor, Scoring
-from hitfactorpy.pydantic_.models import UspsaStageScore
-from hitfactorpy.utils import calculate_uspsa_hit_factor
 
 e4 = decimal.Decimal("0.0001")
 ZERO_HF = decimal.Decimal().quantize(e4)
 
 
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [
+class HitFactorTestCases:
+    CHRONO = [
         (
             # Minimal valid input
             SimpleNamespace(
@@ -44,16 +38,63 @@ ZERO_HF = decimal.Decimal().quantize(e4)
             ),
             decimal.Decimal("6.1234").quantize(e4),
         ),
-    ],
-)
-def test_calculate_uspsa_hit_factor_chrono(test_input, expected):
-    assert calculate_uspsa_hit_factor(test_input) == expected
-    assert UspsaStageScore.from_orm(test_input).calculate_hit_factor() == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [
+    ]
+    FIXED_TIME = [
+        (
+            # Minimal valid input
+            SimpleNamespace(
+                scoring_type=Scoring.FIXED_TIME,
+                a=0,
+                c=0,
+                d=0,
+                m=0,
+                ns=0,
+            ),
+            ZERO_HF,
+        ),
+        (
+            SimpleNamespace(
+                scoring_type=Scoring.FIXED_TIME,
+                power_factor=PowerFactor.MAJOR,
+                a=12,
+                c=7,
+                d=0,
+                m=1,
+                ns=1,
+                procedural=2,
+                time=23.72,
+            ),
+            decimal.Decimal("2.0236").quantize(e4),
+        ),
+        (
+            SimpleNamespace(
+                scoring_type=Scoring.FIXED_TIME,
+                power_factor=PowerFactor.MINOR,
+                a=12,
+                c=7,
+                d=0,
+                m=1,
+                ns=1,
+                procedural=2,
+                time=23.72,
+            ),
+            decimal.Decimal("1.7285").quantize(e4),
+        ),
+        (
+            SimpleNamespace(
+                scoring_type=Scoring.FIXED_TIME,
+                a=7,
+                c=9,
+                d=3,
+                m=1,
+                ns=1,
+                procedural=0,
+                time=24.75,
+            ),
+            decimal.Decimal("1.8182").quantize(e4),
+        ),
+    ]
+    COMSTOCK = [
         (
             # Minimal valid input
             SimpleNamespace(
@@ -151,15 +192,8 @@ def test_calculate_uspsa_hit_factor_chrono(test_input, expected):
             ),
             decimal.Decimal("3.3197").quantize(e4),
         ),
-    ],
-)
-def test_calculate_uspsa_hit_factor_comstock(test_input, expected):
-    assert calculate_uspsa_hit_factor(test_input) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [
+    ]
+    VIRGINIA = [
         (
             # Minimal valid input
             SimpleNamespace(
@@ -169,70 +203,6 @@ def test_calculate_uspsa_hit_factor_comstock(test_input, expected):
                 time=13.21,
             ),
             decimal.Decimal("7.2672").quantize(e4),
-        ),
-    ],
-)
-def test_calculate_uspsa_hit_factor_virginia(test_input, expected):
-    assert calculate_uspsa_hit_factor(test_input) == expected
-
-
-@pytest.mark.parametrize(
-    "test_input,expected",
-    [
-        (
-            # Minimal valid input
-            SimpleNamespace(
-                scoring_type=Scoring.FIXED_TIME,
-                a=0,
-                c=0,
-                d=0,
-                m=0,
-                ns=0,
-            ),
-            ZERO_HF,
-        ),
-        (
-            SimpleNamespace(
-                scoring_type=Scoring.FIXED_TIME,
-                power_factor=PowerFactor.MAJOR,
-                a=12,
-                c=7,
-                d=0,
-                m=1,
-                ns=1,
-                procedural=2,
-                time=23.72,
-            ),
-            decimal.Decimal("2.0236").quantize(e4),
-        ),
-        (
-            SimpleNamespace(
-                scoring_type=Scoring.FIXED_TIME,
-                power_factor=PowerFactor.MINOR,
-                a=12,
-                c=7,
-                d=0,
-                m=1,
-                ns=1,
-                procedural=2,
-                time=23.72,
-            ),
-            decimal.Decimal("1.7285").quantize(e4),
-        ),
-        (
-            SimpleNamespace(
-                scoring_type=Scoring.FIXED_TIME,
-                a=7,
-                c=9,
-                d=3,
-                m=1,
-                ns=1,
-                procedural=0,
-                time=24.75,
-            ),
-            decimal.Decimal("1.8182").quantize(e4),
-        ),
-    ],
-)
-def test_calculate_uspsa_hit_factor_fixed_time(test_input, expected):
-    assert calculate_uspsa_hit_factor(test_input) == expected
+        )
+    ]
+    ALL = CHRONO + FIXED_TIME + COMSTOCK + VIRGINIA
