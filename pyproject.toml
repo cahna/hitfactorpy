@@ -1,20 +1,34 @@
 [tool.poetry]
 name = "hitfactorpy"
-version = "0.1.2"
+version = "1.0.0"
 description = "Python tools for parsing and analyzing practical match reports"
+repository = "https://github.com/cahna/hitfactorpy"
+documentation = "https://cahna.github.io/hitfactorpy/"
+homepage = "https://cahna.github.io/hitfactorpy/"
 authors = ["Conor Heine <conor.heine@gmail.com>"]
 readme = "README.md"
+license = "MIT"
+keywords = ["cli", "parse", "pandas"]
 classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python",
     "Typing :: Typed",
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11"
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Pre-processors",
+    "Topic :: Text Processing",
+    "Topic :: Utilities",
+    "Topic :: Other/Nonlisted Topic",
+    "Intended Audience :: Developers",
 ]
 include = ["hitfactorpy/py.typed"]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/cahna/hitfactorpy/issues"
 
 [tool.poetry.scripts]
 hitfactorpy = 'hitfactorpy.cli:cli'

@@ -6,7 +6,7 @@ Python tools for parsing and analyzing practical match reports.
 
 ## Status
 
-**BETA**: Currently supports USPSA match reports.
+Currently supports USPSA match reports.
 
 ## CLI Docs
 
