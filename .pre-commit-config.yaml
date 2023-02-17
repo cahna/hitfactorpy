@@ -6,6 +6,10 @@ repos:
        files: ^(hitfactorpy/|tests/)
        additional_dependencies:
         - "pydantic>=1.10.4"
+ - repo: https://github.com/PyCQA/autoflake
+   rev: v2.0.1
+   hooks:
+    - id: autoflake
  - repo: local
    hooks:
      - id: black

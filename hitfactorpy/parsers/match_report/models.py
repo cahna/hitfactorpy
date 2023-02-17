@@ -77,6 +77,12 @@ class ParsedMatchInfo:
     raw_date: Optional[str] = None
     date: Optional[datetime] = None
     match_level: Optional[MatchLevel] = None
+    region: Optional[str] = None
+    ps_product: Optional[str] = None
+    ps_version: Optional[str] = None
+    platform: Optional[str] = None
+    club_name: Optional[str] = None
+    club_code: Optional[str] = None
 
 
 @dataclass(frozen=True)

@@ -14,6 +14,11 @@ def assert_example_match_report(report: ParsedMatchReport):
     assert len(report.competitors) == 72
     assert report.stage_scores
     assert len(report.stage_scores) == 494
+    assert report.platform == "IOS"
+    assert report.ps_product
+    assert report.ps_version == "1.682"
+    assert report.club_name == "PaulBunyan"
+    assert report.club_code == "PB"
 
     # Verify a stage
     assert report.stages[0].name == "A New Dawn"
