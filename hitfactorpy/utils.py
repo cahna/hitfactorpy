@@ -1,5 +1,4 @@
 import decimal
-from typing import Protocol
 
 from .decimal_ import D4
 from .enums import PowerFactor, Scoring
