@@ -3,12 +3,12 @@ import pytest
 from hitfactorpy.parsers.match_report.strict import parse_match_report
 
 from .mock_data import EXAMPLE_REPORT
-from .shared import assert_example_match_report
+from .shared import assert_example_uspsa_match_report
 
 
 def test_parse_match_report():
     assert (report := parse_match_report(EXAMPLE_REPORT))
-    assert_example_match_report(report)
+    assert_example_uspsa_match_report(report)
 
 
 @pytest.mark.parametrize(

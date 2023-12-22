@@ -1,5 +1,5 @@
 import logging
-from enum import Enum, unique
+from enum import Enum
 from io import StringIO
 from typing import Any, Callable, List, Mapping
 
@@ -13,7 +13,6 @@ from ..models import ParsedStage
 _logger = logging.getLogger(__name__)
 
 
-@unique
 class StageColumnName(str, Enum):
     """Known competitor column names. May also include dataframe references and custom columns added to the dataframe after parsing."""
 
@@ -24,6 +23,7 @@ class StageColumnName(str, Enum):
     CLASSIFIER_NUM = "Classifier_No"
     STAGE_NAME = "Stage_name"
     SCORING = "ScoringType"
+    GUN_TYPE = "Guntype"
 
 
 CSV_CONVERTERS: Mapping[str, Callable[[str], Any]] = {
@@ -54,13 +54,15 @@ def parse_stages(stage_csv_text: str) -> List[ParsedStage]:
         ParsedStage(
             internal_id=internal_id,
             name=stage_name,
+            number=internal_id,
             scoring_type=scoring,
             min_rounds=min_rounds,
             max_points=max_points,
             classifier=classifier,
             classifier_number=classifier_number,
+            gun_type=gun_type,
         )
-        for internal_id, stage_name, scoring, min_rounds, max_points, classifier, classifier_number in zip(
+        for internal_id, stage_name, scoring, min_rounds, max_points, classifier, classifier_number, gun_type in zip(
             df.index,
             df[StageColumnName.STAGE_NAME],
             df[StageColumnName.SCORING],
@@ -68,6 +70,7 @@ def parse_stages(stage_csv_text: str) -> List[ParsedStage]:
             df[StageColumnName.MAX_POINTS],
             df[StageColumnName.CLASSIFIER],
             df[StageColumnName.CLASSIFIER_NUM],
+            df[StageColumnName.GUN_TYPE],
         )
     ]
     # TODO: how to handle this edge case?
