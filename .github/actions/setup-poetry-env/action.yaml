@@ -2,10 +2,14 @@ name: "setup-poetry-env"
 description: "Composite action to setup the Python and poetry environment."
 
 inputs:
-   python-version:
-     required: false
-     description: "The python version to use"
-     default: "3.10"
+  python-version:
+    required: false
+    description: "The python version to use"
+    default: "3.10"
+  cached-venv:
+    required: false
+    description: "Whether to use a cached venv or not"
+    default: true
 
 runs:
   using: "composite"
@@ -18,7 +22,7 @@ runs:
     - name: Install Poetry
       uses: snok/install-poetry@v1
       with:
-        virtualenvs-in-project: true
+        virtualenvs-in-project: ${{ inputs.cached-venv }}
 
     - name: get repository name
       run: echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
@@ -27,11 +31,12 @@ runs:
     - name: Load cached venv
       id: cached-poetry-dependencies
       uses: actions/cache@v3
+      if: ${{ inputs.cached-venv }}
       with:
         path: .venv
         key: venv-$${{ env.REPOSITORY_NAME }}-${{ runner.os }}-${{ inputs.python-version }}-${{ hashFiles('poetry.lock') }}
 
     - name: Install dependencies
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      if: ${{ inputs.cached-venv && steps.cached-poetry-dependencies.outputs.cache-hit != 'true' }}
       run: poetry install --no-interaction
       shell: bash

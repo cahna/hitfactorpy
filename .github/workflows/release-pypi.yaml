@@ -1,0 +1,24 @@
+name: Publish to PyPI
+on:
+  release:
+    types: [published]
+
+jobs:
+  pypi_release:
+    name: Poetry Build & Publish (PyPI)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Init python/poetry environment
+        uses: ./.github/actions/setup-poetry-env
+        with:
+          cached-venv: false
+
+      - run: poetry run pytest
+      
+      - run: poetry config pypi-token.pypi "${{ secrets.PYPI_API_KEY }}"
+      
+      - name: "TODO: Publish to PyPI"
+        run: echo TODO && exit 1
+        shell: bash

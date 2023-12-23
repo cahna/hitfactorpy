@@ -12,18 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v3
-      
-      - name: get repository name
-        run: echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
-        shell: bash
+        uses: actions/checkout@v4
 
       - uses: actions/cache@v3
         with:
           path: ~/.cache/pre-commit
           key: pre-commit-${{ env.REPOSITORY_NAME }}-${{ hashFiles('.pre-commit-config.yaml') }}
 
-      - name: Set up the environment
+      - name: Init python/poetry environment
         uses: ./.github/actions/setup-poetry-env
 
       - name: Run pre-commit
@@ -34,34 +30,50 @@ jobs:
 
       - name: Check Poetry lock file consistency
         run: poetry lock --check
-
-  tox:
+      
+      - name: black
+        run: poetry run black --check ./hitfactorpy ./tests
+      
+      - name: flake8
+        run: poetry run flake8 ./hitfactorpy ./tests
+      
+      - name: isort
+        run: poetry run isort --check ./hitfactorpy ./tests
+  
+  typecheck:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.10', '3.11']
-      fail-fast: false
     steps:
       - name: Check out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up python
-        uses: actions/setup-python@v4
+      - uses: actions/cache@v3
+        with:
+          path: ~/.mypy_cache
+          key: mypy-cache-${{ env.REPOSITORY_NAME }}-${{ hashFiles('pyproject.toml') }}
+      
+      - name: Init python/poetry environment
+        uses: ./.github/actions/setup-poetry-env
+
+      - run: poetry run mypy ./hitfactorpy ./tests
+
+  tox:
+    needs:
+      - quality
+      - typecheck
+    strategy:
+      matrix:
+        os: ["ubuntu-latest", "macos-latest"]
+        python-version: ['3.10', '3.11']
+      fail-fast: true
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up the environment
+        uses: ./.github/actions/setup-poetry-env
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-      
-      - name: get repository name
-        run: echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
-        shell: bash
-
-      - name: Load cached venv
-        uses: actions/cache@v3
-        with:
-          path: .tox
-          key: venv-${{ env.REPOSITORY_NAME }}-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install tox
         run: |
@@ -72,10 +84,13 @@ jobs:
         run: tox
 
   check-docs:
+    needs:
+      - quality
+      - typecheck
     runs-on: ubuntu-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up the environment
         uses: ./.github/actions/setup-poetry-env
