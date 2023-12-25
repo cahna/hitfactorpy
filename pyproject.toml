@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hitfactorpy"
-version = "1.0.0"
+version = "1.0.1"
 description = "Python tools for parsing and analyzing practical match reports"
 repository = "https://github.com/cahna/hitfactorpy"
 documentation = "https://cahna.github.io/hitfactorpy/"

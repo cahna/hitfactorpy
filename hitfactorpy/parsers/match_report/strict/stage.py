@@ -14,6 +14,7 @@ _logger = logging.getLogger(__name__)
 @unique
 class StageColumn(int, Enum):
     ID = 0
+    GUN_TYPE = 1
     MIN_ROUNDS = 2
     MAX_POINTS = 3
     CLASSIFIER = 4
@@ -53,9 +54,12 @@ def parse_match_report_stage_lines(
     stages: List[ParsedStage] = []
     for line in stage_lines:
         row = parse_csv_row(line)
+        stage_number_text = row[StageColumn.ID].strip()
+        stage_number = int(re.sub(r"[^0-9]", "", stage_number_text))
         stage = ParsedStage(
-            internal_id=int(re.sub(r"[^0-9]", "", row[StageColumn.ID].strip())),
+            internal_id=stage_number,
             name=row[StageColumn.STAGE_NAME].strip(),
+            number=stage_number,
             min_rounds=parse_int_value(row[StageColumn.MIN_ROUNDS]),
             max_points=parse_int_value(row[StageColumn.MAX_POINTS]),
             classifier=row[StageColumn.CLASSIFIER].strip().lower() == "yes",
@@ -63,6 +67,7 @@ def parse_match_report_stage_lines(
             scoring_type=parse_scoring(row[StageColumn.SCORING])
             if len(row) > StageColumn.SCORING
             else Scoring.COMSTOCK,
+            gun_type=row[StageColumn.GUN_TYPE].strip(),
         )
         stages.append(stage)
     return stages

@@ -27,11 +27,13 @@ class ParsedStage:
 
     internal_id: int
     name: Optional[str] = None
+    number: Optional[int | str] = None
     min_rounds: Optional[int] = 0
     max_points: Optional[int] = 0
     classifier: bool = False
     classifier_number: Optional[str] = None
     scoring_type: Scoring = Scoring.COMSTOCK
+    gun_type: Optional[str] = None
 
 
 @dataclass(frozen=True)

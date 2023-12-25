@@ -4,7 +4,7 @@ from hitfactorpy.enums import Classification, Division, PowerFactor, Scoring
 from hitfactorpy.parsers.match_report.models import ParsedMatchReport
 
 
-def assert_example_uspsa_match_report(report: ParsedMatchReport):
+def assert_uspsa_report_20230108(report: ParsedMatchReport):
     """Assert the expected state of the report after sucessful parsing"""
     assert report
     assert report.name == "Paul Bunyan USPSA - January 2023 NW01"
@@ -100,3 +100,6 @@ def assert_example_uspsa_match_report(report: ParsedMatchReport):
     assert report.stage_scores[69].dnf is True
     assert report.stage_scores[69].dq is False
     assert report.stage_scores[69].competitor_id == 70
+
+
+assert_match_report = assert_uspsa_report_20230108
